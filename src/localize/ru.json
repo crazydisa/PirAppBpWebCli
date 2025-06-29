@@ -1,0 +1,243 @@
+{
+    "AppTitle": "ИС \"Сапсан\"",
+    "AppCopyrightTitle": "© 2020-2022 Тюменский нефтяной научный центр", 
+    "AppCopyrightDescription": "Отдел автоматизации проектирования, УИТО", 
+
+    "AccessDenied": "Отказано в доступе",
+    "AccessDeniedText": "У вас отсутствует доступ к данной странице.",
+    "TryAgain": "Попробовать снова",
+    "PageNotFound": "Страница не найдена",
+    "PageNotFoundText": "Страница с указанным адресом не найдена, либо была удалена.",
+    "ServiceIsNotAvailable": "Сервис не доступен",
+    "ServiceIsNotAvailableText": "Сервис в данный момент не доступен, повторите попытку позже.",
+    "BrowserNotSupported": "Браузер IE не поддерживается.",
+    "BrowserNotSupportedText": "Браузер Microsoft Internet Explorer не поддерживается.",
+    "BrowserNotSupportedRecomendation": "Для работы используйте Mozilla Firefox или Microsoft Edge.",
+    "ToMainPage": "На главную страницу",
+    "Debug": "ОТЛАДКА",
+    "Test": "ТЕСТ",
+
+    "Main": "Главная",
+    "Parts": "Основные разделы",
+    "UserLogin": "Логин пользователя",
+    "UserTitle": "Имя пользователя",
+    "UserEmail": "Email",
+    "UserRoles": "Роли пользователя",
+    "ActionTitle": "Действие",
+    "ActionIsChange": "Изменяет данные",
+    "ActionTypeTitle": "Тип объекта",
+    "ActionModuleTitle": "Модуль",
+    "ActionObjectTitle": "Объект изменения",
+    "ActionRoles": "Роли",
+    "Dictionaries": "Справочники",
+    "NsDictionaries": "Справочники ЗиС",
+    "Dictionary": "Справочник",
+    "IsNotUsed": "Не используется",
+    "Service": "Сервис",
+
+    "NewSystemVersionIsAvailable": "Доступна новая версия приложения. Для обновления нажмите CTRL+F5.",
+
+    "AppSettings": "Настройки системы",
+
+
+    "Logs": "Журнал изменений",
+    "LogText": "Содержание",
+    "LogLevelTitle": "Результат",
+    "LogLevel1": "Успех",
+    "LogLevel2": "Отказано в доступе",
+    "LogTime": "Время",
+    "LogUserTitle": "Пользователь",
+    "LogUserName": "Логин",
+    "LogDetailId": "ИД изменения",
+    "LogPropertyTitle": "Свойство объекта",
+    "LogPropertyOldValue": "Старое значение",
+    "LogPropertyNewValue": "Новое значение",
+    "LogPeriods": "Период времени",
+    "LogPeriodPer1Week": "Неделя",
+    "LogPeriodPer1Month": "Месяц",
+    "LogPeriodPer3Month": "Три месяца",
+    "LogPeriodPer6Month": "Пол года",
+    "LogPeriodPer1Year": "Год",
+    "LogPeriodAll": "Все",
+    "LogStatuses": "Журнал изменения статусов",
+    "StatusFieldTitle": "Измененное поле",
+    "OldStatus": "Предыдущий статус",
+    "OldStatusDate": "Дата предыдущего статуса",
+    "NewStatus": "Новый статус",
+    "NewStatusDate": "Дата нового статуса",
+    "NewStatusComment": "Комментарий",
+    "DeviationStatusDate": "Кол-во дней между изменением статуса",
+    "LogUserSessions": "Журнал пользовательских сессий",
+    "LogUserSessionStartTime": "Время начала сессии",
+    "LogUserSessionLastTime": "Время последней активности",
+    "LogUserSessionDurationMinutes": "Продолжительность сессии, мин.",
+    "LogUserSessionPageTitle": "Имя страницы",
+    "LogUserSessionPagePath": "Адресс страницы",
+
+
+    "Administration": "Администрирование",
+    "RolesEditor": "Роли",
+    "UserRolesEditor": "Пользователи и роли",
+    "ActionRolesEditor": "Разрешенные действия и роли",
+
+    "Roles": "Роли",
+    "Role": "Роль",
+    "RoleName": "Имя роли",
+    "RoleIsPosition": "Должностные функции",
+    "RoleIsDepartment": "Принадлежность к отделу",
+    "RoleIsList": "Список пользователей",
+
+    "NotifyInfo": "Информация",
+    "NotifySuccess": "Успех",
+    "NotifyWarning": "Предупреждение",
+    "NotifyError": "Ошибка",
+
+    "Edit": "Редактировать",
+    "Save": "Сохранить",
+    "Next": "Далее",
+    "Ok": "ОК",
+    "Cancel": "Отмена",
+    "Apply": "Применить",
+    "Add": "Добавить",
+    "AddSelected": "Добавить выбранные",
+    "Remove": "Исключить",
+    "Copy": "Копировать",
+    "Search": "Найти",
+    "DoubleRow": "Дублировать строку",
+
+    "Object": "Объект",
+    "Value": "Значение",
+
+    "Yes": "Да",
+    "No": "Нет",
+
+    "true": "Да",
+    "false": "Нет",
+
+    "Key": "Ключ",
+    "SortIndex": "№ п.п.",
+    "Name": "Имя",
+    "Title": "Название",
+    "Description": "Описание",
+    "Author": "Кем создано",
+    "Editor": "Кем изменено",
+    "Created": "Создано",
+    "Modified": "Изменено",
+
+    "Show": "Отобразить",
+    "Hide": "Скрыть",
+    "Expand": "Развернуть",
+    "Collapse": "Свернуть",
+    "Empty": "(Пусто)",
+
+    "Refresh": "Обновить",
+    "ClearFilters": "Сбросить фильтры",
+    "ResetGridState": "Сбросить все настройки таблицы",
+    "HideColumn": "Скрыть",
+    "ClearCellValue": "Очистить значение",
+    "ApplyFilter": "Применить фильтр",
+    "ColumnGroupFilter": "Фильтр групп столбцов",
+    "Select": "Выбрать",
+
+    "BgColor": "Цвет фона",
+
+    "MinRowHeight": "Уменьшить высоту строк",
+    "MaxRowHeight": "Увеличить высоту строк",
+
+    "ReorderList": "Изменить порядок в списке",
+    "SaveReorderList": "Сохранить порядок",
+
+
+    "ImportData": "Импорт данных",
+    "ImportFileData": "Импорт данных из файла",
+    "ImportPirAppData": "Импорт данных из АПП-ПИР",
+    "ImportSapsanData": "Импорт данных из Сапсан",
+
+    
+    "Years": "Годы",
+    "Year": "Год",
+    "StartYear": "Год начала",
+    "FinishYear": "Год окончания",
+    "Months": "Месяцы",
+    "Month": "Месяц",
+
+    "Statuses": "Статусы",
+    "Status": "Статус",
+
+    "Projects": "Проекты",
+    "Project": "Проект",
+    "ProjectShifr": "Шифр проекта",
+    "ProjectTitle": "Наименование проекта",
+
+    "ProjectStages": "Стадии",
+    "ProjectStage": "Стадия",
+
+    "Performers": "Исполнители",
+    "Performer": "Исполнитель",
+    
+    "Gips": "ГИПы",
+    "Gip": "ГИП",
+    "GipTitle": "Имя ГИПа",
+
+    "Fields": "Месторождения",
+    "Field": "Месторождение",
+    "FieldTitle": "Название месторождения",
+
+    "Customer": "Заказчик",
+    "TechCustomers": "Тех. заказчики",
+    "TechCustomer": "Тех. заказчик",
+
+
+    "Departments": "Отделы",
+    "Department": "Отдел",
+    "DepartmentTitle": "Название отдела",
+    "DepartmentDescription": "Описание отдела",
+    "LeadDepartment": "Ведущий отдел",
+
+    "Measures": "Единицы измерения",
+    "Measure": "Единица измерения",
+
+    "KitBuildTemlateItems": "Шаблоны площадных объектов",
+    "KitBuildTemlateItem": "Шаблон площадных объектов",
+    "KitBuildTemlateKoItem": "Комплексный объект",
+    "KitBuildTemlateStageNumber": "Номер этапа(ов;)",
+    "AddKitBuildTemlateItems": "Добавить элементы шаблонов площадных объектов",
+    "AddKitBuildItemToTemlates": "Добавить элемент в шаблоны",
+
+    "KitLineTemlateItems": "Шаблоны линейных объектов",
+    "KitLineTemlateItem": "Шаблон линейных объектов",
+    "KitLineTemlateKoItem": "Комплексный объект",
+    "KitLineTemlateType": "Вид набора шаблонов",
+    "AddKitLineTemlateItems": "Добавить элементы шаблонов линейных объектов",
+    "AddKitLineItemToTemlates": "Добавить элемент в шаблоны",
+
+    "KitCollections": "Наборы сооружений",
+    "KitCollection": "Набор сооружений",
+    "KitCollectionNotSelected": "Набор сооружений не выбран",
+
+    "KitBuildItems": "Площадные объекты",
+    "KitBuildItem": "Площадной объект",
+    "KitBuildItemsIsBlocked": "Редактирование строк заблокировано",
+
+    "KitBuildKoItem": "Параметры КО",
+    "EditKitBuildKoItem": "Изменить параметры КО",
+
+    "KitLineItems": "Линейные объекты",
+    "KitLineItem": "Линейный объект",
+
+    "KitNetItems": "Внутриплощадочные сети",
+    "KitNetItem": "Внутриплощадочная сеть",
+
+    "KoItem": "Комплексный объект",
+    "OiItem": "Объект инфраструктуры",
+
+    "CheckApprove": "Поставить отметку",
+
+    "KitCollectionReports": "Формирование отчетов",
+    "KitCollectionTzReport": "Дополнительные данные для формирования ТЗИИ",
+    "KitCollectionTzReportButtonName": "Сформировать ТЗИИ",
+    "KitCollectionTzReportFileName": "ТЗИИ",
+
+    "KitCollectionExplGpReportMenuName": "Сформировать экспликацию",
+    "KitCollectionExplGpReportFileName": "Экспликация"
+}

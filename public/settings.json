@@ -1,0 +1,10 @@
+{
+    "isTest": true,
+    
+    "debugServiceUrl": "http://localhost:5038",
+    
+    "debugAppPath": "",
+
+    "releaseServiceUrl": "http://tnnc-sapsan-app/py-flask-app",
+    "releaseAppPath": ""
+}
