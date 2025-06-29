@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const packageJson = require('./package.json');
 const isProduction = process.env.NODE_ENV === 'production';
 module.exports = defineConfig({
-  publicPath: isProduction ? '/' : '/',
+  publicPath: isProduction ? '/pir-tz' : '/',
     configureWebpack: {
         plugins: [
             new webpack.DefinePlugin({
