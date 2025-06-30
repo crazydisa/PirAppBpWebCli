@@ -2,7 +2,7 @@ const { defineConfig } = require('@vue/cli-service')
 const webpack = require('webpack');
 const packageJson = require('./package.json');
 const isProduction = process.env.NODE_ENV === 'production';
-module.exports = defineConfig({
+module.exports = {
   publicPath: isProduction ? '/' : '/',
     configureWebpack: {
         plugins: [
@@ -29,7 +29,7 @@ module.exports = defineConfig({
       rtlSupport: false
     }
   }
-})
+}
 
 
 
