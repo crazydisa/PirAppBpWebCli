@@ -1,8 +1,11 @@
 {
-"routes": [
-		{
-			"src": "/.*",
-			"dest": "/index.html"
-		}
+	"framework": "vue",
+	"buildCommand": "npm run build",
+	"outputDirectory": "dist",
+	"routes": [
+	  { "src": "/api/.*", "dest": "/api/index.js" },
+	  { "handle": "filesystem" },
+	  { "src": "/(.*)", "dest": "/index.html" }
 	]
-}
+	
+  }
