@@ -11,7 +11,13 @@ module.exports = defineConfig({
                     PACKAGE_VERSION: '"' + packageJson.version + '"'
                 }
             })
-        ]
+        ],
+        optimization: {
+          splitChunks:{
+            minSize: 10000,
+            maxSize: 250000,
+          }
+        }
     },
     transpileDependencies: [
     'quasar'
