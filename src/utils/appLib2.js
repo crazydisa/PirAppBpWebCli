@@ -2,6 +2,7 @@ import store from '@/store'
 //import weekeds from '@/utils/holidaysAndWeekends.js'
 //import utils from '.'
 import utils from '@/utils'
+import notify from "@/notify";
 //import notify from "@/notify";
 //import appLib from "@/utils";
 //import {toRaw} from 'vue';
@@ -119,7 +120,7 @@ export default {
           selectedRow=utils.isValidObject({selectedRow},"Id","bigint","number","string","guid")
           if(!selectedRow) return
           if(typeof selectedRow.Id != "string"){
-            participationRequestOptions.condition = "EventId == "+selectedRow.Id
+            participationRequestOptions.condition = "TournamentId == "+selectedRow.Id
             await store.dispatch(participationRequestOptions.actionName,participationRequestOptions)
           }
           else{
@@ -156,31 +157,31 @@ export default {
       }
     }
   },
-  async LoadPlayerByRankId(){
-    let graph = store.getters.getGraph
-    let rootComp = graph.findVertexByValue("CONTAINERRank")
-    if (rootComp){
-      let selectedTabName = graph.getNodeValue(rootComp.name,"selectedTab")
-      if(selectedTabName=="Разряды"){
-        let QObjectsDataGridRank = graph.findVertexByValue("QObjectsDataGridRank")
-        if (QObjectsDataGridRank){
-          let playerRequestOptions = this.GetRequesOptionsTemplate("CONTAINERPlayer")
-          let selectedRow = graph.getNodeValue(QObjectsDataGridRank.name,"selectedObject")
-          selectedRow=utils.isValidObject({selectedRow},"Id","bigint","number","string","guid")
-          if(!selectedRow) return
-          if(typeof selectedRow.Id != "string"){
-            playerRequestOptions.condition = "RankId == "+selectedRow.Id
-            await store.dispatch(playerRequestOptions.actionName,playerRequestOptions)
-          }
-          else{
-            playerRequestOptions.actionName = "clearStore"
-            let fullTypeName = playerRequestOptions.nameSpace+"."+playerRequestOptions.typeName
-            store.dispatch(playerRequestOptions.actionName,fullTypeName)
-          }
-        }
-      }
-    }
-  },
+  // async LoadPlayerByRankId(){
+  //   let graph = store.getters.getGraph
+  //   let rootComp = graph.findVertexByValue("CONTAINERRank")
+  //   if (rootComp){
+  //     let selectedTabName = graph.getNodeValue(rootComp.name,"selectedTab")
+  //     if(selectedTabName=="Разряды"){
+  //       let QObjectsDataGridRank = graph.findVertexByValue("QObjectsDataGridRank")
+  //       if (QObjectsDataGridRank){
+  //         let playerRequestOptions = this.GetRequesOptionsTemplate("CONTAINERPlayer")
+  //         let selectedRow = graph.getNodeValue(QObjectsDataGridRank.name,"selectedObject")
+  //         selectedRow=utils.isValidObject({selectedRow},"Id","bigint","number","string","guid")
+  //         if(!selectedRow) return
+  //         if(typeof selectedRow.Id != "string"){
+  //           playerRequestOptions.condition = "RankId == "+selectedRow.Id
+  //           await store.dispatch(playerRequestOptions.actionName,playerRequestOptions)
+  //         }
+  //         else{
+  //           playerRequestOptions.actionName = "clearStore"
+  //           let fullTypeName = playerRequestOptions.nameSpace+"."+playerRequestOptions.typeName
+  //           store.dispatch(playerRequestOptions.actionName,fullTypeName)
+  //         }
+  //       }
+  //     }
+  //   }
+  // },
 
   async LoadPlayerByCityId(){
     let graph = store.getters.getGraph
@@ -255,5 +256,70 @@ export default {
         }
       }
     }
-  },  
+  }, 
+  async getReport(){
+        let graph = store.getters.getGraph
+        let rootComp = graph.findVertexByValue("CONTAINEREvent")
+        if (rootComp){
+          let selectedTabName = graph.getNodeValue(rootComp.name,"selectedTab")
+          if(selectedTabName=="Турниры"){
+            let selectedId = null
+            let QDataGrid = graph.findVertexByValue("QObjectsDataGridEvent")
+            if(QDataGrid){
+              let selectedItem = graph.getNodeValue(QDataGrid.name,"selectedObject")
+              let matchValue = utils.isValidObject({selectedItem},"Id","bigint","number")
+              if(matchValue){
+                selectedId = matchValue.Id
+                let actionName = "loadFilesReport"
+                let fileName = matchValue.Title
+                if(!fileName || fileName==""){
+                  fileName = "Report.pdf"
+                }else{
+                  let ext = fileName.match(/\.[0-9a-z]+$/i)
+                  if (ext){
+                    if(ext[0]){
+                      if(ext[0].toLowerCase()!=".pdf"){
+                        fileName = fileName.replace(ext, ".xlsx");
+                      }
+                    }
+                  }else{
+                    fileName = fileName+".pdf"
+                  }
+                }
+                console.log("selectedId = ",selectedId)
+                await store.dispatch(actionName,{Id:selectedId,fileName})
+              }
+              else{
+                notify.defaultError("Сначала сохраните табель в базу!")
+                return
+              }
+            }
+          }
+        }
+      }, 
+      disableButtons(compName){
+            let result = false
+            let graph = store.getters.getGraph
+            let QObjectsDataGridEvent = graph.findVertexByValue("QObjectsDataGridEvent")
+            
+            
+            let isRowNotSelected
+            
+            switch (compName) {
+              
+              case "getReport": //Скачать отчет в pdf
+                  isRowNotSelected = graph.getNodeValue(QObjectsDataGridEvent.name,"isRowNotSelected");
+                  console.log("getReport, isRowNotSelected = ", isRowNotSelected)
+                  if(isRowNotSelected()){
+                    result = true
+                  }
+                  break;
+              case "editSave":
+                  
+                  break;
+              default:
+                
+            }
+            return result
+          },
 }

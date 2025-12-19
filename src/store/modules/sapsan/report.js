@@ -4,10 +4,10 @@ import api from "@/store/api"
 export default {
     name: 'report',
     actions: {
-        async loadFilesReport({commit},{tabelId, fileName}) {
+        async loadFilesReport({commit},{Id, fileName}) {
             await api.downloadFile(
                 "GetReportStream",
-                "/sapsan-app/getReportStream?tabelId="+tabelId,
+                "/documents?eventId="+Id,
                 fileName,
                 commit
             );

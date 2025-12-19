@@ -6,7 +6,7 @@ var participations = {
   CONTAINERNAME: "CONTAINERParticipation",
   MYSTYLE: { }, 
   selectedTab: "Результаты",
-  requestOptions1:{typeName: "Participation", nameSpace: "GamesResults.Models.Bowling", 
+  requestOptions1:{typeName: "TournamentResult", nameSpace: "GamesResults.Models.Bowling", 
     actionName: "loadAnyObjects", getterName: "getAnyObjects", setterName:"setAnyObjects",
     url:"/universal/anyObjects", accesName: "GetAnyObjects",
     condition: null, useFilterIds: false, idPropName: "Id", ids:[]},
@@ -38,8 +38,8 @@ var participations = {
                   autoLoad: true,
                   autoColumns: false,
                   columns: [
-                    {dataField: "EventId", dataType: "list", allowEditing: true, 
-                      name: "EventId", label: "Турнир", field: "EventId",},
+                    {dataField: "TournamentId", dataType: "list", allowEditing: true, 
+                      name: "TournamentId", label: "Турнир", field: "TournamentId",},
                     {dataField: "PlayerId", dataType: "list", allowEditing: true,
                      name: "PlayerId", label: "Игрок",  field: "PlayerId",},     
                     {dataField: "TeamId", dataType: "list", allowEditing: true,
@@ -63,8 +63,8 @@ var participations = {
 
 
                   ],
-                  objectType: "{setvalue getterName=getObjectTypes, path=Participation}",
-                  objectTypeName: "Participation",
+                  objectType: "{setvalue getterName=getObjectTypes, path=TournamentResult}",
+                  objectTypeName: "TournamentResult",
                   docPartsObjectType: null,
                   height: "40vh",
                   width: "100%",
@@ -93,7 +93,7 @@ var events = {
   CONTAINERNAME: "CONTAINEREvent",
   MYSTYLE: { }, 
   selectedTab: "Турниры",
-  requestOptions1:{typeName: "Event", nameSpace: "GamesResults.Models.Bowling", 
+  requestOptions1:{typeName: "Tournament", nameSpace: "GamesResults.Models.Bowling", 
     actionName: "loadAnyObjects", getterName: "getAnyObjects", setterName:"setAnyObjects",
     url:"/universal/anyObjects", accesName: "GetAnyObjects",
     condition: null, useFilterIds: false, idPropName: "Id", ids:[]},
@@ -107,6 +107,16 @@ var events = {
               static: true,
               MYSTYLE: {},
               COMPONENTS: [ 
+                {
+                  component: "QButton", 
+                  NAME: "getReport",
+                  label: "Скачать исходный файл pdf",
+                  tooltipText: "Скачать исхолный pdf файл результатов турнира",
+                  disableTooltipText: "Выберете турнир!",
+                  disable: () => {return applib2.disableButtons("getReport")},
+                  MYSTYLE: {display: "flex",},
+                  handlerqButtonClick1: applib2.getReport,
+                  },
                 {component: "QObjectsDataGrid", 
                   NAME: "QObjectsDataGridEvent",
                   autoGetDataSource: true,
@@ -127,15 +137,15 @@ var events = {
                   columns: [
                     {dataField: "Name", dataType: "string", allowEditing: true, 
                       name: "Name", label: "Name", field: "Name",},
-                      {dataField: "EventType", dataType: "string", allowEditing: true,
-                      name: "EventType", label: "Тип", field: "EventType",},     
-                      {dataField: "EventDate", dataType: "date", allowEditing: true,
-                        name: "EventDate", label: "Дата начала", field: "EventDate",align: "left"},     
+                      {dataField: "TournamentType", dataType: "string", allowEditing: true,
+                      name: "TournamentType", label: "Тип", field: "TournamentType",},     
+                      {dataField: "StartDate", dataType: "date", allowEditing: true,
+                        name: "StartDate", label: "Дата начала", field: "StartDate",align: "left"},     
                       {dataField: "OilId", dataType: "list", allowEditing: true,
                         name: "OilId", label: "Программа масла", field: "OilId",},   
                   ],
-                  objectType: "{setvalue getterName=getObjectTypes, path=Event}",
-                  objectTypeName: "Event",
+                  objectType: "{setvalue getterName=getObjectTypes, path=Tournament}",
+                  objectTypeName: "Tournament",
                   docPartsObjectType: null,
                   height: "40vh",
                   width: "100%",
@@ -149,6 +159,7 @@ var events = {
                   getter: undefined,
                   actionName: null,
                   actionParam: "", 
+                  isRowNotSelected: () => true,
                   selectedCell: null,
                   selectedObject: null,
                   selectedObjectDataType: null,
@@ -157,8 +168,9 @@ var events = {
                   thisInstance: null,
                   instance: null,
                   text: "",
-                  handlerqDataGridSelection: applib2.LoadParticipationByEventId,
+                  handlerqDataGridSelection: applib2.LoadParticipationByTournamentId,
                   filter: null},
+                  
               ]
   }]
 }
@@ -370,75 +382,7 @@ var cities = {
   }]
 }
 
-var ranks = {
-  CONTAINERNAME: "CONTAINERRank",
-  MYSTYLE: { }, 
-  selectedTab: "Разряды",
-  requestOptions1:{typeName: "Rank", nameSpace: "GamesResults.Models.Bowling", 
-    actionName: "loadAnyObjects", getterName: "getAnyObjects", setterName:"setAnyObjects",
-    url:"/universal/anyObjects", accesName: "GetAnyObjects",
-    condition: null, useFilterIds: false, idPropName: "Id", ids:[]},
-  //handlerSelectedTab1: applib.LoadDepOrders,
 
-  //handlerSelectedTab3: applib.loadCalendar,
-  dataSource: [{
-              GROUPNAME: "GROUPRank",
-              title: "Разряды", 
-              label:"Разряды",
-              static: true,
-              MYSTYLE: {},
-              COMPONENTS: [ 
-                {component: "QObjectsDataGrid", 
-                  NAME: "QObjectsDataGridRank",
-                  autoGetDataSource: true,
-                  dataSource: [],
-                  importDataSource: [],
-                  keyExpr: "Id",
-                  title: "Разряды",
-                  requestOptions: "{binding componentName=CONTAINERRank, path=requestOptions1}",
-  
-                  disableButtons: {addRow: false,save: false,removeRow: false},
-                  selected: [],
-                    addedRows:[],
-                    deletedRows:[],
-                    changedRows:[],
-                  selection: "single",
-                  autoLoad: true,
-                  autoColumns: false,
-                  columns: [
-                    {dataField: "Name", dataType: "string", allowEditing: true, 
-                      name: "Name", label: "Разряд", field: "Name",},
-                     
-                  ],
-                  objectType: "{setvalue getterName=getObjectTypes, path=Rank}",
-                  objectTypeName: "Rank",
-                  docPartsObjectType: null,
-                  height: "40vh",
-                  width: "100%",
-                  ['editing-mode']: "popup",
-                  getterName: null,
-                  modifiedObjects: [],
-                  selectedTabInMyGroup: null,
-                  selectedCellType: "",
-                  selectedCellData:"",
-                  getterParam: "",
-                  getter: undefined,
-                  actionName: null,
-                  actionParam: "", 
-                  selectedCell: null,
-                  selectedObject: null,
-                  selectedObjectDataType: null,
-                  selectedValue: "",
-                  selectedObjectType: null,
-                  thisInstance: null,
-                  instance: null,
-                  text: "",
-                  handlerqDataGridSelection: applib2.LoadPlayerByRankId,
-                },
-                  
-              ]
-  }]
-}
 
 var teams = {
   CONTAINERNAME: "CONTAINERTeam",
@@ -554,8 +498,7 @@ var teamMembers = {
                       name: "TeamId",  label: "Команда", field: "TeamId",},     
                     {dataField: "CityId", dataType: "list", allowEditing: true,
                       name: "CityId", label: "Город", field: "CityId",},  
-                    {dataField: "RankId", dataType: "list", allowEditing: true,
-                      name: "RankId", label: "Разряд", field: "RankId",},  
+                    
                     {dataField: "StartDate", dataType: "date", allowEditing: true,
                       name: "StartDate", label: "Начало", field: "StartDate",align: "left",
                       },
@@ -2457,7 +2400,7 @@ export default {
       return {treeViewPopupContent: treeViewPopupContent, treeViewContent:treeViewContent, documentContent:documentContent, 
         complectContent:complectContent, createComplect:createComplect, transferTask:transferTask, laborCostContent:laborCostContent,
         participations:participations, events:events, bowlings:bowlings,navigation1:navigation1,
-        oils:oils, teams:teams,teamMembers:teamMembers,players:players, cities:cities, ranks:ranks, uploads:uploads};
+        oils:oils, teams:teams,teamMembers:teamMembers,players:players, cities:cities, uploads:uploads};
     },
     getdataGridPopupContent() {
       //делаем копию стуктуры
