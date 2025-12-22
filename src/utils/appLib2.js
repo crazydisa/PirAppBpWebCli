@@ -60,7 +60,7 @@ export default {
             //let fullTypeName = requestOptions.nameSpace+"."+requestOptions.typeName
             await store.dispatch(participationRequestOptions.actionName,participationRequestOptions)
             let participationDataSource =  store.getters[participationRequestOptions.getterName][participationRequestOptions.nameSpace+"."+participationRequestOptions.typeName]//.filter(o=> o.TabelId === selectedTabel.Id)    
-            let differentEventIds = this.getDifferentByProps(participationDataSource,"EventId")
+            let differentEventIds = this.getDifferentByProps(participationDataSource,"TournamentId")
             console.log(differentEventIds)
             eventRequestOptions.useFilterIds = true
             eventRequestOptions.idPropTypeName = "System.Int64"
