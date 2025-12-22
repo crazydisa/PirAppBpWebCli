@@ -30,59 +30,42 @@ export default {
     }
     return distinct
   },
-  async LoadEventByBowlingId(){
+  async LoadTournamentByBowlingId(){
     let graph = store.getters.getGraph
     let rootComp = graph.findVertexByValue("CONTAINERBowling")
     if (rootComp){
       let selectedTabName = graph.getNodeValue(rootComp.name,"selectedTab")
       if(selectedTabName=="Боулинги"){
-        //let QObjectsDataGridEvent = graph.findVertexByValue("QObjectsDataGridEvent")
         let QObjectsDataGridBowling = graph.findVertexByValue("QObjectsDataGridBowling")
-        //let QObjectsDataGridEvent = graph.findVertexByValue("QObjectsDataGridEvent")
-        //let cardClockObjectComp = graph.findVertexByValue("cardClockObjectComp")
         if (QObjectsDataGridBowling){
-          //graph.setNodeValue(cardClockObjectComp.name,"importDataSource",[])
-          //let dataSource = graph.getNodeValue(comp.name,"dataSource")
-          let eventRequestOptions = this.GetRequesOptionsTemplate("CONTAINEREvent")
-          let participationRequestOptions = this.GetRequesOptionsTemplate("CONTAINERParticipation")
+          let tournamentRequestOptions = this.GetRequesOptionsTemplate("CONTAINERTournament")
+          let baseTournamentResultRequestOptions = this.GetRequesOptionsTemplate("CONTAINERBaseTournamentResult")
           let selectedRow = graph.getNodeValue(QObjectsDataGridBowling.name,"selectedObject")
           selectedRow=utils.isValidObject({selectedRow},"Id","bigint","number","string","guid")
           if(!selectedRow) return
-          //let filter = graph.getNodeValue(QObjectsDataGridEvent.name,"filter")
-          //if(filter != selectedRow.Id){
-            //graph.setNodeValue(QObjectsDataGridEvent.name,"dataSource",[])
-          //}
-          //let addedRows = graph.getNodeValue(tabelObjectComp.name,"addedRows")
-          //let deletedRows = graph.getNodeValue(tabelObjectComp.name,"deletedRows")
-          //let selectedIsAdded = addedRows.find(o => o.Id == selectedTabel.Id)
           if(typeof selectedRow.Id != "string"){
-            participationRequestOptions.condition = "BowlingId == "+selectedRow.Id
-            //let fullTypeName = requestOptions.nameSpace+"."+requestOptions.typeName
-            await store.dispatch(participationRequestOptions.actionName,participationRequestOptions)
-            let participationDataSource =  store.getters[participationRequestOptions.getterName][participationRequestOptions.nameSpace+"."+participationRequestOptions.typeName]//.filter(o=> o.TabelId === selectedTabel.Id)    
-            let differentEventIds = this.getDifferentByProps(participationDataSource,"EventId")
-            console.log(differentEventIds)
-            eventRequestOptions.useFilterIds = true
-            eventRequestOptions.idPropTypeName = "System.Int64"
+            tournamentRequestOptions.condition = "BowlingId == "+selectedRow.Id
+            await store.dispatch(baseTournamentResultRequestOptions.actionName,baseTournamentResultRequestOptions)
+            let baseTournamentResultDataSource =  store.getters[baseTournamentResultRequestOptions.getterName][baseTournamentResultRequestOptions.nameSpace+"."+baseTournamentResultRequestOptions.typeName]//.filter(o=> o.TabelId === selectedTabel.Id)    
+            let differentEventIds = this.getDifferentByProps(baseTournamentResultDataSource,"TournamentId")
+            tournamentRequestOptions.useFilterIds = true
+            tournamentRequestOptions.idPropTypeName = "System.Int64"
             for(let i = 0; i < differentEventIds.length; i++) {
               let Id = differentEventIds[i]
-              eventRequestOptions.ids.push(Id)
+              tournamentRequestOptions.ids.push(Id)
             }
-            await store.dispatch(eventRequestOptions.actionName, eventRequestOptions)
-            //let debugEvent = store.getters[eventRequestOptions.getterName][eventRequestOptions.nameSpace+"."+eventRequestOptions.typeName]
-            //console.log("debugEvent",eventRequestOptions.nameSpace)
-            //graph.setNodeValue(QObjectsDataGridEvent.name,"dataSource",debugEvent)
+            await store.dispatch(tournamentRequestOptions.actionName, tournamentRequestOptions)
           }
           else{
-            eventRequestOptions.actionName = "clearStore"
-            let fullTypeName = eventRequestOptions.nameSpace+"."+eventRequestOptions.typeName
-            store.dispatch(eventRequestOptions.actionName,fullTypeName)
+            tournamentRequestOptions.actionName = "clearStore"
+            let fullTypeName = tournamentRequestOptions.nameSpace+"."+tournamentRequestOptions.typeName
+            store.dispatch(tournamentRequestOptions.actionName,fullTypeName)
           }
         }
       }
     }
   },
-  async LoadEventByOilId(){
+  async LoadTournamentByOilId(){
     let graph = store.getters.getGraph
     let rootComp = graph.findVertexByValue("CONTAINEROil")
     if (rootComp){
@@ -90,43 +73,43 @@ export default {
       if(selectedTabName=="Программа масла"){
         let QObjectsDataGridOil = graph.findVertexByValue("QObjectsDataGridOil")
         if (QObjectsDataGridOil){
-          let eventRequestOptions = this.GetRequesOptionsTemplate("CONTAINEREvent")
+          let tournamentRequestOptions = this.GetRequesOptionsTemplate("CONTAINERTournament")
           let selectedRow = graph.getNodeValue(QObjectsDataGridOil.name,"selectedObject")
           selectedRow=utils.isValidObject({selectedRow},"Id","bigint","number","string","guid")
           if(!selectedRow) return
           if(typeof selectedRow.Id != "string"){
-            eventRequestOptions.condition = "OilId == "+selectedRow.Id
-            await store.dispatch(eventRequestOptions.actionName,eventRequestOptions)
+            tournamentRequestOptions.condition = "OilId == "+selectedRow.Id
+            await store.dispatch(tournamentRequestOptions.actionName,tournamentRequestOptions)
           }
           else{
-            eventRequestOptions.actionName = "clearStore"
-            let fullTypeName = eventRequestOptions.nameSpace+"."+eventRequestOptions.typeName
-            store.dispatch(eventRequestOptions.actionName,fullTypeName)
+            tournamentRequestOptions.actionName = "clearStore"
+            let fullTypeName = tournamentRequestOptions.nameSpace+"."+tournamentRequestOptions.typeName
+            store.dispatch(tournamentRequestOptions.actionName,fullTypeName)
           }
         }
       }
     }
   },
-  async LoadParticipationByEventId(){
+  async LoadBaseTournamentResultByTournamentId(){
     let graph = store.getters.getGraph
-    let rootComp = graph.findVertexByValue("CONTAINEREvent")
+    let rootComp = graph.findVertexByValue("CONTAINERTournament")
     if (rootComp){
       let selectedTabName = graph.getNodeValue(rootComp.name,"selectedTab")
       if(selectedTabName=="Турниры"){
-        let QObjectsDataGridEvent = graph.findVertexByValue("QObjectsDataGridEvent")
-        if (QObjectsDataGridEvent){
-          let participationRequestOptions = this.GetRequesOptionsTemplate("CONTAINERParticipation")
-          let selectedRow = graph.getNodeValue(QObjectsDataGridEvent.name,"selectedObject")
+        let QObjectsDataGridTournament = graph.findVertexByValue("QObjectsDataGridTournament")
+        if (QObjectsDataGridTournament){
+          let baseTournamentResultRequestOptions = this.GetRequesOptionsTemplate("CONTAINERBaseTournamentResult")
+          let selectedRow = graph.getNodeValue(QObjectsDataGridTournament.name,"selectedObject")
           selectedRow=utils.isValidObject({selectedRow},"Id","bigint","number","string","guid")
           if(!selectedRow) return
           if(typeof selectedRow.Id != "string"){
-            participationRequestOptions.condition = "TournamentId == "+selectedRow.Id
-            await store.dispatch(participationRequestOptions.actionName,participationRequestOptions)
+            baseTournamentResultRequestOptions.condition = "TournamentId == "+selectedRow.Id
+            await store.dispatch(baseTournamentResultRequestOptions.actionName,baseTournamentResultRequestOptions)
           }
           else{
-            participationRequestOptions.actionName = "clearStore"
-            let fullTypeName = participationRequestOptions.nameSpace+"."+participationRequestOptions.typeName
-            store.dispatch(participationRequestOptions.actionName,fullTypeName)
+            baseTournamentResultRequestOptions.actionName = "clearStore"
+            let fullTypeName = baseTournamentResultRequestOptions.nameSpace+"."+baseTournamentResultRequestOptions.typeName
+            store.dispatch(baseTournamentResultRequestOptions.actionName,fullTypeName)
           }
         }
       }
@@ -215,31 +198,18 @@ export default {
     if (rootComp){
       let selectedTabName = graph.getNodeValue(rootComp.name,"selectedTab")
       if(selectedTabName=="Игроки"){
-        //let QObjectsDataGridEvent = graph.findVertexByValue("QObjectsDataGridEvent")
         let QObjectsDataGridPlayer = graph.findVertexByValue("QObjectsDataGridPlayer")
-        //let cardClockObjectComp = graph.findVertexByValue("cardClockObjectComp")
         if (QObjectsDataGridPlayer){
-          //graph.setNodeValue(cardClockObjectComp.name,"importDataSource",[])
-          //let dataSource = graph.getNodeValue(comp.name,"dataSource")
           let teamRequestOptions = this.GetRequesOptionsTemplate("CONTAINERTeam")
           let teamMemberRequestOptions = this.GetRequesOptionsTemplate("CONTAINERTeamMember")
           let selectedRow = graph.getNodeValue(QObjectsDataGridPlayer.name,"selectedObject")
           selectedRow=utils.isValidObject({selectedRow},"Id","bigint","number","string","guid")
           if(!selectedRow) return
-          //let filter = graph.getNodeValue(QObjectsDataGridEvent.name,"filter")
-          //if(filter != selectedRow.Id){
-            //graph.setNodeValue(QObjectsDataGridEvent.name,"dataSource",[])
-          //}
-          //let addedRows = graph.getNodeValue(tabelObjectComp.name,"addedRows")
-          //let deletedRows = graph.getNodeValue(tabelObjectComp.name,"deletedRows")
-          //let selectedIsAdded = addedRows.find(o => o.Id == selectedTabel.Id)
           if(typeof selectedRow.Id != "string"){
             teamMemberRequestOptions.condition = "PlayerId == "+selectedRow.Id
-            //let fullTypeName = requestOptions.nameSpace+"."+requestOptions.typeName
             await store.dispatch(teamMemberRequestOptions.actionName,teamMemberRequestOptions)
             let teamMemberDataSource =  store.getters[teamMemberRequestOptions.getterName][teamMemberRequestOptions.nameSpace+"."+teamMemberRequestOptions.typeName]//.filter(o=> o.TabelId === selectedTabel.Id)    
             let differentTeamMemberIds = this.getDifferentByProps(teamMemberDataSource,"TeamId")
-            console.log(differentTeamMemberIds)
             teamRequestOptions.useFilterIds = true
             teamRequestOptions.idPropTypeName = "System.Int64"
             for(let i = 0; i < differentTeamMemberIds.length; i++) {
@@ -300,7 +270,7 @@ export default {
       disableButtons(compName){
             let result = false
             let graph = store.getters.getGraph
-            let QObjectsDataGridEvent = graph.findVertexByValue("QObjectsDataGridEvent")
+            let QObjectsDataGridTournament = graph.findVertexByValue("QObjectsDataGridTournament")
             
             
             let isRowNotSelected
@@ -308,7 +278,7 @@ export default {
             switch (compName) {
               
               case "getReport": //Скачать отчет в pdf
-                  isRowNotSelected = graph.getNodeValue(QObjectsDataGridEvent.name,"isRowNotSelected");
+                  isRowNotSelected = graph.getNodeValue(QObjectsDataGridTournament.name,"isRowNotSelected");
                   console.log("getReport, isRowNotSelected = ", isRowNotSelected)
                   if(isRowNotSelected()){
                     result = true
