@@ -7,6 +7,7 @@ var participations = {
   MYSTYLE: { }, 
   selectedTab: "Результаты",
   requestOptions1:{typeName: "BaseTournamentResult", nameSpace: "GamesResults.Models.Bowling", 
+  requestOptions1:{typeName: "BaseTournamentResult", nameSpace: "GamesResults.Models.Bowling", 
     actionName: "loadAnyObjects", getterName: "getAnyObjects", setterName:"setAnyObjects",
     url:"/universal/anyObjects", accesName: "GetAnyObjects",
     condition: null, useFilterIds: false, idPropName: "Id", ids:[]},
@@ -63,6 +64,8 @@ var participations = {
 
 
                   ],
+                  objectType: "{setvalue getterName=getObjectTypes, path=BaseTournamentResult}",
+                  objectTypeName: "BaseTournamentResult",
                   objectType: "{setvalue getterName=getObjectTypes, path=BaseTournamentResult}",
                   objectTypeName: "BaseTournamentResult",
                   docPartsObjectType: null,
