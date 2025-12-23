@@ -93,6 +93,7 @@ var participations = {
 }
 var events = {
   CONTAINERNAME: "CONTAINERTournament",
+  width: 400,
   MYSTYLE: { }, 
   selectedTab: "Турниры",
   requestOptions1:{typeName: "Tournament", nameSpace: "GamesResults.Models.Bowling", 
@@ -648,7 +649,7 @@ var navigation1 = {
 
   //handlerSelectedTab3: applib.loadCalendar,
   dataSource: [{
-              GROUPNAME: "GROUPBowling",
+              GROUPNAME: "GROUPBowlingnNvigation",
               title: "Турниры и результаты", 
               label:"Турниры и результаты",
               static: true,
@@ -663,6 +664,21 @@ var navigation1 = {
               ]
   }]
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //import { readonly } from 'vue';

@@ -12,7 +12,7 @@
       <q-drawer 
         v-model="drawerLeft"
         show-if-above
-        :width="900"
+        :width="events.width"
         :breakpoint="900"
         elevated
         class="bg-black text-white"
