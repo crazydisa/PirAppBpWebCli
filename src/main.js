@@ -1,3 +1,11 @@
+//import { createApp } from 'vue'
+//mport { Quasar, Notify } from 'quasar' // ⬅️ Импортируйте Notify
+//import quasarLang from 'quasar/lang/ru'
+
+// Иконки и стили
+import '@quasar/extras/material-icons/material-icons.css'
+import 'quasar/src/css/index.sass'
+
 import {createApp} from 'vue';
 import App from './App.vue';
 import store from './store';
