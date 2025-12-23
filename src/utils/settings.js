@@ -66,8 +66,7 @@ var participations = {
                   ],
                   objectType: "{setvalue getterName=getObjectTypes, path=BaseTournamentResult}",
                   objectTypeName: "BaseTournamentResult",
-                  objectType: "{setvalue getterName=getObjectTypes, path=BaseTournamentResult}",
-                  objectTypeName: "BaseTournamentResult",
+                  
                   docPartsObjectType: null,
                   height: "40vh",
                   width: "100%",
