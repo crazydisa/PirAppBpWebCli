@@ -95,7 +95,13 @@ async function start() {
           layout: 'empty-layout',
           isPublicPage: true
       }
-    }
+    },
+    {
+    path: '/admin/ratings',
+    name: 'AdminRatings',
+    component: import('@/pages/system/AdminRatingsPanel.vue'),
+    meta: { requiresAuth: true, requiresAdmin: true }
+  }
   );
   routes.forEach(route => {
     router.addRoute(route)

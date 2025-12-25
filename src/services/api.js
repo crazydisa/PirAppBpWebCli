@@ -52,6 +52,27 @@ export const ratingsApi = {
   
   getRatingDistribution() {
     return api.get('/api/statistics/rating-distribution');
+  },
+  // Административные методы
+  updateTournamentRatings(tournamentId) {
+    return api.post(`/api/ratings/tournament/${tournamentId}/update`);
+  },
+  
+  recalculateAllRatings() {
+    return api.post('/api/ratings/recalculate-all');
+  },
+  
+  getRecalculationProgress() {
+    return api.get('/api/ratings/recalculation-progress');
+  },
+  
+  // Турниры для админа
+  getUnprocessedTournaments(params) {
+    return api.get('/api/tournaments/unprocessed', { params });
+  },
+  
+  getRecentTournaments(params) {
+    return api.get('/api/tournaments/recent', { params });
   }
 };
 
