@@ -79,8 +79,8 @@
                   v-model="selectedTournament"
                   :options="tournaments"
                   label="Выберите турнир"
-                  option-label="name"
-                  option-value="id"
+                  option-label="Name"
+                  option-value="Id"
                   emit-value
                   map-options
                   dense
@@ -88,15 +88,15 @@
                   :loading="loadingTournaments"
                   class="q-mb-md"
                 >
-                  <template v-slot:option="scope">
+                <template v-slot:option="scope">
                     <q-item v-bind="scope.itemProps">
                       <q-item-section>
-                        <q-item-label>{{ scope.opt.name }}</q-item-label>
+                        <q-item-label>{{ scope.opt.Name }}</q-item-label>
                         <q-item-label caption>
-                          {{ formatDate(scope.opt.startDate) }} • {{ scope.opt.city }}
+                          {{ formatDate(scope.opt.StartDate) }} • {{ scope.opt.City }}
                         </q-item-label>
                       </q-item-section>
-                      <q-item-section side v-if="scope.opt.ratingsUpdated">
+                      <q-item-section side v-if="scope.opt.RatingsUpdated">
                         <q-badge color="positive" rounded>Обработан</q-badge>
                       </q-item-section>
                     </q-item>
@@ -335,7 +335,17 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <!-- Диалог деталей турнира -->
+    <TournamentDetailsDialog
+      v-model="showTournamentDetails"
+      :tournament-id="selectedTournamentId"
+      @close="showTournamentDetails = false"
+      @update-ratings="handleRatingsUpdated"
+      @edit="handleEditTournament"
+      @delete="handleDeleteTournament"
+    />
   </q-page>
+
 </template>
 
 <script>
@@ -343,10 +353,14 @@ import { ref, onMounted } from 'vue';
 import { date } from 'quasar';
 import { api } from '../../services/api';
 import { useQuasar } from 'quasar';
+import TournamentDetailsDialog from '../../components/TournamentDetailsDialog.vue';
 export default {
   name: 'AdminRatingsPanel',
-  
+  components: {
+    TournamentDetailsDialog
+  },
   setup() {
+
     const $q = useQuasar();
     const loading = ref(false);
     const loadingTournaments = ref(false);
@@ -390,7 +404,7 @@ export default {
     const loadStats = async () => {
       try {
         const response = await api.get('/api/ratings/statistics');
-        stats.value = response.data.data || {};
+        stats.value = response.data.Data || {};
       } catch (error) {
         console.error('Ошибка загрузки статистики:', error);
       }
@@ -403,7 +417,9 @@ export default {
         const response = await api.get('/api/tournaments/unprocessed', {
           params: { limit: 50 }
         });
-        tournaments.value = response.data.data || [];
+        tournaments.value = response.data.Data || [];
+        console.log("tournaments = ",tournaments)
+        console.log("response = ",response)
       } catch (error) {
         console.error('Ошибка загрузки турниров:', error);
       } finally {
@@ -418,7 +434,7 @@ export default {
         const response = await api.get('/api/tournaments/recent', {
           params: { limit: 10 }
         });
-        recentHistory.value = response.data.data || [];
+        recentHistory.value = response.data.Data || [];
       } catch (error) {
         console.error('Ошибка загрузки истории:', error);
       } finally {
@@ -530,7 +546,7 @@ export default {
         
         try {
           const response = await api.get('/api/ratings/recalculation-progress');
-          const progress = response.data.data;
+          const progress = response.data.Data;
           
           if (progress.completed) {
             progressMessage.value = 'Перерасчет успешно завершен!';
@@ -575,10 +591,7 @@ export default {
       updateTournamentRatings();
     };
 
-    const viewTournamentDetails = (tournament) => {
-      // Реализуйте переход к деталям турнира
-      console.log('View tournament:', tournament);
-    };
+    
 
     // Инициализация
     onMounted(async () => {
@@ -588,7 +601,39 @@ export default {
         loadRecentHistory()
       ]);
     });
-
+    const showTournamentDetails = ref(false);
+    const selectedTournamentId = ref(null);
+    
+    const viewTournamentDetails = (tournament) => {
+      console.log('View tournament:', tournament);
+      selectedTournamentId.value = tournament.Id || tournament.id;
+      showTournamentDetails.value = true;
+    };
+    
+    const handleRatingsUpdated = (tournamentId) => {
+      console.log('Рейтинги обновлены для турнира:', tournamentId);
+      // Обновляем список турниров
+      loadTournaments();
+      loadRecentHistory();
+    };
+    
+    const handleEditTournament = (tournament) => {
+      console.log('Редактировать турнир:', tournament);
+      // Переход на страницу редактирования
+      // или открытие диалога редактирования
+    };
+    
+    const handleDeleteTournament = async (tournamentId) => {
+      try {
+        await api.delete(`/api/tournaments/${tournamentId}`);
+        // Обновляем списки
+        loadTournaments();
+        loadRecentHistory();
+        showTournamentDetails.value = false;
+      } catch (error) {
+        console.error('Ошибка удаления турнира:', error);
+      }
+    };
     return {
       loading,
       loadingTournaments,
@@ -609,7 +654,7 @@ export default {
       progressTotal,
       currentOperation,
       operationInProgress,
-      
+
       formatDate,
       formatDateTime,
       loadTournaments,
@@ -617,7 +662,12 @@ export default {
       updateTournamentRatings,
       recalculateAllRatings,
       selectTournamentForUpdate,
-      viewTournamentDetails
+      viewTournamentDetails,
+      showTournamentDetails,
+      selectedTournamentId,
+      handleRatingsUpdated,
+      handleEditTournament,
+      handleDeleteTournament
     };
   }
 };
