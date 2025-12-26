@@ -97,10 +97,10 @@ async function start() {
       }
     },
     {
-    path: '/admin/ratings',
+    path: '/admin/ratings2',
     name: 'AdminRatings',
-    component: import('@/pages/system/AdminRatingsPanel.vue'),
-    meta: { requiresAuth: true, requiresAdmin: true }
+    component: () => import('@/pages/system/AdminRatingsPanel.vue'),
+    meta: { requiresAuth: false, requiresAdmin: false, layout: 'main-layout', }
   }
   );
   routes.forEach(route => {
