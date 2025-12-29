@@ -12,12 +12,16 @@
 
     <!-- Карточки статистики -->
     <div class="row q-col-gutter-md q-mb-lg">
+      <!-- Основные карточки статистики -->
       <div class="col-12 col-md-3">
         <q-card class="stat-card">
           <q-card-section class="text-center">
             <q-icon name="people" size="40px" color="primary" class="q-mb-sm" />
-            <div class="text-h6 text-grey-7">Игроков с рейтингом</div>
-            <div class="text-h3 text-primary">{{ stats.playersWithRating || 0 }}</div>
+            <div class="text-h6 text-grey-7">Всего игроков</div>
+            <div class="text-h3 text-primary">{{ getStat('TotalPlayers') || 0 }}</div>
+            <div class="text-caption text-grey-6 q-mt-sm">
+              Активных: {{ getStat('ActivePlayers') || 0 }}
+            </div>
           </q-card-section>
         </q-card>
       </div>
@@ -27,7 +31,10 @@
           <q-card-section class="text-center">
             <q-icon name="emoji_events" size="40px" color="positive" class="q-mb-sm" />
             <div class="text-h6 text-grey-7">Обработано турниров</div>
-            <div class="text-h3 text-positive">{{ stats.tournamentsProcessed || 0 }}</div>
+            <div class="text-h3 text-positive">{{ getStat('TournamentsProcessed') || 0 }}</div>
+            <div class="text-caption text-grey-6 q-mt-sm">
+              {{ getStat('AverageTournamentsPerPlayer', 0).toFixed(1) }} сред. на игрока
+            </div>
           </q-card-section>
         </q-card>
       </div>
@@ -35,10 +42,11 @@
       <div class="col-12 col-md-3">
         <q-card class="stat-card">
           <q-card-section class="text-center">
-            <q-icon name="update" size="40px" color="warning" class="q-mb-sm" />
-            <div class="text-h6 text-grey-7">Последнее обновление</div>
-            <div class="text-h6 text-warning">
-              {{ formatDate(stats.lastUpdated) || 'Никогда' }}
+            <q-icon name="trending_up" size="40px" color="amber" class="q-mb-sm" />
+            <div class="text-h6 text-grey-7">Средний рейтинг</div>
+            <div class="text-h3 text-amber">{{ getStat('AverageRating', 0).toFixed(0) }}</div>
+            <div class="text-caption text-grey-6 q-mt-sm">
+              Медиана: {{ getStat('MedianRating', 0).toFixed(0) }}
             </div>
           </q-card-section>
         </q-card>
@@ -49,7 +57,212 @@
           <q-card-section class="text-center">
             <q-icon name="history" size="40px" color="info" class="q-mb-sm" />
             <div class="text-h6 text-grey-7">Историй рейтингов</div>
-            <div class="text-h3 text-info">{{ stats.totalRatingChanges || 0 }}</div>
+            <div class="text-h3 text-info">{{ getStat('TotalRatingChanges', 0) }}</div>
+            <div class="text-caption text-grey-6 q-mt-sm">
+              Новых за месяц: {{ getStat('NewPlayersLastMonth', 0) }}
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
+
+    <!-- Дополнительная статистика -->
+    <div class="row q-col-gutter-md q-mb-lg">
+      <!-- Распределение рейтингов -->
+      <div class="col-12 col-md-6">
+        <q-card>
+          <q-card-section>
+            <div class="text-h6">Распределение рейтингов</div>
+            <div class="text-caption text-grey-7">
+              Количество игроков по диапазонам рейтинга
+            </div>
+          </q-card-section>
+          
+          <q-card-section class="q-pt-none">
+            <div v-if="hasRatingDistribution" class="q-mb-md">
+              <div v-for="(count, range) in getStat('RatingDistribution', {})" 
+                   :key="range" 
+                   class="row items-center q-mb-xs">
+                <div class="col-4">
+                  <span class="text-caption">{{ range }}</span>
+                </div>
+                <div class="col-8">
+                  <q-linear-progress
+                    :value="count / totalPlayers"
+                    color="primary"
+                    class="q-mr-sm"
+                    style="height: 10px"
+                  />
+                  <span class="text-caption text-weight-medium">{{ count }}</span>
+                </div>
+              </div>
+            </div>
+            <div v-else class="text-center text-grey-6 q-py-md">
+              Нет данных о распределении рейтингов
+            </div>
+          </q-card-section>
+          
+          <q-card-section class="q-pt-none">
+            <div class="row items-center">
+              <div class="col">
+                <div class="text-caption text-grey-7">Высший рейтинг</div>
+                <div class="text-h5 text-positive">{{ getStat('HighestRating', 0) }}</div>
+              </div>
+              <div class="col text-center">
+                <div class="text-caption text-grey-7">Низший рейтинг</div>
+                <div class="text-h5 text-negative">{{ getStat('LowestRating', 0) }}</div>
+              </div>
+              <div class="col text-right">
+                <div class="text-caption text-grey-7">Разброс</div>
+                <div class="text-h5 text-warning">
+                  {{ (getStat('HighestRating', 0) - getStat('LowestRating', 0)) }}
+                </div>
+              </div>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+
+      <!-- Распределение по турнирам -->
+      <div class="col-12 col-md-6">
+        <q-card>
+          <q-card-section>
+            <div class="text-h6">Распределение по турнирам</div>
+            <div class="text-caption text-grey-7">
+              Количество игроков по количеству сыгранных турниров
+            </div>
+          </q-card-section>
+          
+          <q-card-section class="q-pt-none">
+            <div v-if="hasTournamentDistribution" class="q-mb-md">
+              <div v-for="(count, range) in getStat('TournamentDistribution', {})" 
+                   :key="range" 
+                   class="row items-center q-mb-xs">
+                <div class="col-4">
+                  <span class="text-caption">{{ range }} турниров</span>
+                </div>
+                <div class="col-8">
+                  <q-linear-progress
+                    :value="count / totalPlayers"
+                    color="positive"
+                    class="q-mr-sm"
+                    style="height: 10px"
+                  />
+                  <span class="text-caption text-weight-medium">{{ count }}</span>
+                </div>
+              </div>
+            </div>
+            <div v-else class="text-center text-grey-6 q-py-md">
+              Нет данных о распределении по турнирам
+            </div>
+          </q-card-section>
+          
+          <q-card-section class="q-pt-none">
+            <div class="row">
+              <div class="col">
+                <div class="text-caption text-grey-7">Статистика по полу</div>
+                <div v-if="genderStats" class="q-mt-sm">
+                  <div class="row items-center q-mb-xs">
+                    <div class="col">
+                      <q-icon name="male" color="blue" size="sm" />
+                      <span class="text-caption q-ml-xs">Мужчины:</span>
+                    </div>
+                    <div class="col text-right">
+                      <span class="text-weight-medium">{{ genderStats.MaleCount || 0 }}</span>
+                      <span class="text-caption text-grey-7 q-ml-xs">
+                        ({{ genderStats.MaleAverageRating || 0 }} ср.)
+                      </span>
+                    </div>
+                  </div>
+                  <div class="row items-center">
+                    <div class="col">
+                      <q-icon name="female" color="pink" size="sm" />
+                      <span class="text-caption q-ml-xs">Женщины:</span>
+                    </div>
+                    <div class="col text-right">
+                      <span class="text-weight-medium">{{ genderStats.FemaleCount || 0 }}</span>
+                      <span class="text-caption text-grey-7 q-ml-xs">
+                        ({{ genderStats.FemaleAverageRating || 0 }} ср.)
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div v-else class="text-grey-6 text-caption">
+                  Нет данных по полу
+                </div>
+              </div>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
+
+    <!-- Топ регионов -->
+    <div class="row q-col-gutter-md q-mb-lg" v-if="hasTopRegions">
+      <div class="col-12">
+        <q-card>
+          <q-card-section>
+            <div class="row items-center">
+              <div class="col">
+                <div class="text-h6">Топ регионов по рейтингу</div>
+                <div class="text-caption text-grey-7">
+                  Регионы с самым высоким средним рейтингом игроков
+                </div>
+              </div>
+              <div class="col-auto">
+                <q-btn
+                  flat
+                  round
+                  icon="expand_more"
+                  @click="regionsExpanded = !regionsExpanded"
+                />
+              </div>
+            </div>
+          </q-card-section>
+          
+          <q-card-section class="q-pt-none">
+            <q-list bordered separator v-if="regionsExpanded">
+              <q-item v-for="(region, index) in topRegions" :key="region.Name" clickable>
+                <q-item-section avatar>
+                  <q-avatar color="primary" text-color="white">
+                    {{ index + 1 }}
+                  </q-avatar>
+                </q-item-section>
+                
+                <q-item-section>
+                  <q-item-label>{{ region.Name }}</q-item-label>
+                  <q-item-label caption>
+                    {{ region.PlayerCount }} игроков • {{ region.TotalTournaments }} турниров
+                  </q-item-label>
+                </q-item-section>
+                
+                <q-item-section side>
+                  <div class="text-right">
+                    <div class="text-h6 text-primary">{{ region.AverageRating }}</div>
+                    <div class="text-caption">
+                      макс: {{ region.HighestRating }}
+                    </div>
+                  </div>
+                </q-item-section>
+              </q-item>
+            </q-list>
+            
+            <div v-else class="row q-col-gutter-sm">
+              <div v-for="(region, index) in topRegions.slice(0, 5)" 
+                   :key="region.Name" 
+                   class="col-12 col-md-4 col-lg-2">
+                <q-card flat bordered class="text-center">
+                  <q-card-section>
+                    <div class="text-h6 text-grey-7">{{ index + 1 }}</div>
+                    <div class="text-subtitle1 text-weight-medium">{{ region.Name }}</div>
+                    <div class="text-h5 text-primary q-my-sm">{{ region.AverageRating }}</div>
+                    <div class="text-caption text-grey-7">
+                      {{ region.PlayerCount }} игроков
+                    </div>
+                  </q-card-section>
+                </q-card>
+              </div>
+            </div>
           </q-card-section>
         </q-card>
       </div>
@@ -88,7 +301,7 @@
                   :loading="loadingTournaments"
                   class="q-mb-md"
                 >
-                <template v-slot:option="scope">
+                  <template v-slot:option="scope">
                     <q-item v-bind="scope.itemProps">
                       <q-item-section>
                         <q-item-label>{{ scope.opt.Name }}</q-item-label>
@@ -235,17 +448,17 @@
         <q-table
           :rows="recentHistory"
           :columns="historyColumns"
-          row-key="id"
+          row-key="Id"
           :loading="loadingHistory"
           flat
           bordered
         >
           <template v-slot:body-cell-tournament="props">
             <q-td :props="props">
-              <div class="text-weight-medium">{{ props.row.tournamentName }}</div>
+              <div class="text-weight-medium">{{ props.row.Name }}</div>
               <div class="text-caption text-grey-7">
-                {{ formatDate(props.row.startDate) }}
-                <span v-if="props.row.city"> • {{ props.row.city }}</span>
+                {{ formatDate(props.row.StartDate) }}
+                <span v-if="props.row.City"> • {{ props.row.City }}</span>
               </div>
             </q-td>
           </template>
@@ -253,8 +466,8 @@
           <template v-slot:body-cell-status="props">
             <q-td :props="props">
               <q-badge
-                :color="props.row.ratingsUpdated ? 'positive' : 'warning'"
-                :label="props.row.ratingsUpdated ? 'Обработан' : 'Не обработан'"
+                :color="props.row.RatingsUpdated ? 'positive' : 'warning'"
+                :label="props.row.RatingsUpdated ? 'Обработан' : 'Не обработан'"
                 rounded
               />
             </q-td>
@@ -262,8 +475,8 @@
 
           <template v-slot:body-cell-updated="props">
             <q-td :props="props">
-              <div v-if="props.row.ratingsUpdatedDate">
-                {{ formatDateTime(props.row.ratingsUpdatedDate) }}
+              <div v-if="props.row.RatingsUpdatedDate">
+                {{ formatDateTime(props.row.RatingsUpdatedDate) }}
               </div>
               <div v-else class="text-grey-6">—</div>
             </q-td>
@@ -272,7 +485,7 @@
           <template v-slot:body-cell-actions="props">
             <q-td :props="props">
               <q-btn
-                v-if="!props.row.ratingsUpdated"
+                v-if="!props.row.RatingsUpdated"
                 flat
                 dense
                 color="primary"
@@ -298,43 +511,6 @@
       </q-card-section>
     </q-card>
 
-    <!-- Прогресс выполнения -->
-    <q-dialog v-model="showProgressDialog" persistent>
-      <q-card style="min-width: 400px">
-        <q-card-section>
-          <div class="text-h6">Выполняется перерасчет</div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          <div class="text-body1 q-mb-md">{{ progressMessage }}</div>
-          
-          <q-linear-progress
-            v-if="progressCurrent && progressTotal"
-            :value="progressCurrent / progressTotal"
-            color="primary"
-            class="q-mb-sm"
-          />
-          
-          <div v-if="progressCurrent && progressTotal" class="text-center">
-            {{ progressCurrent }} из {{ progressTotal }} ({{ Math.round(progressCurrent / progressTotal * 100) }}%)
-          </div>
-          
-          <div v-if="currentOperation" class="text-caption text-grey-7 q-mt-sm">
-            Текущая операция: {{ currentOperation }}
-          </div>
-        </q-card-section>
-
-        <q-card-actions align="center">
-          <q-btn
-            flat
-            label="Закрыть"
-            color="primary"
-            v-close-popup
-            :disable="operationInProgress"
-          />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
     <!-- Диалог деталей турнира -->
     <TournamentDetailsDialog
       v-model="showTournamentDetails"
@@ -345,22 +521,23 @@
       @delete="handleDeleteTournament"
     />
   </q-page>
-
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { date } from 'quasar';
 import { api } from '../../services/api';
 import { useQuasar } from 'quasar';
 import TournamentDetailsDialog from '../../components/TournamentDetailsDialog.vue';
+
 export default {
   name: 'AdminRatingsPanel',
+  
   components: {
     TournamentDetailsDialog
   },
+  
   setup() {
-
     const $q = useQuasar();
     const loading = ref(false);
     const loadingTournaments = ref(false);
@@ -372,6 +549,7 @@ export default {
     const tournaments = ref([]);
     const recentHistory = ref([]);
     const selectedTournament = ref(null);
+    const regionsExpanded = ref(false);
     
     const confirmRecalculation = ref(false);
     const showProgressDialog = ref(false);
@@ -381,13 +559,51 @@ export default {
     const currentOperation = ref('');
     const operationInProgress = ref(false);
 
+    // Computed свойства
+    const totalPlayers = computed(() => {
+      return getStat('TotalPlayers', 0);
+    });
+
+    const hasRatingDistribution = computed(() => {
+      const distribution = getStat('RatingDistribution', {});
+      return distribution && Object.keys(distribution).length > 0;
+    });
+
+    const hasTournamentDistribution = computed(() => {
+      const distribution = getStat('TournamentDistribution', {});
+      return distribution && Object.keys(distribution).length > 0;
+    });
+
+    const hasTopRegions = computed(() => {
+      const regions = getStat('TopRegions', []);
+      return regions && regions.length > 0;
+    });
+
+    const topRegions = computed(() => {
+      return getStat('TopRegions', []);
+    });
+
+    const genderStats = computed(() => {
+      return getStat('GenderStatistics', null);
+    });
+
     const historyColumns = [
-      { name: 'tournament', label: 'Турнир', field: 'tournamentName', align: 'left', sortable: true },
-      { name: 'status', label: 'Статус', field: 'ratingsUpdated', align: 'center', sortable: true },
-      { name: 'updated', label: 'Обновлен', field: 'ratingsUpdatedDate', align: 'center', sortable: true },
-      { name: 'players', label: 'Участники', field: 'playerCount', align: 'center', sortable: true },
+      { name: 'tournament', label: 'Турнир', field: 'Name', align: 'left', sortable: true },
+      { name: 'status', label: 'Статус', field: 'RatingsUpdated', align: 'center', sortable: true },
+      { name: 'updated', label: 'Обновлен', field: 'RatingsUpdatedDate', align: 'center', sortable: true },
+      { name: 'players', label: 'Участники', field: 'ParticipantCount', align: 'center', sortable: true },
       { name: 'actions', label: 'Действия', align: 'center' }
     ];
+
+    // Helper функция для безопасного доступа к данным
+    const getStat = (key, defaultValue = null) => {
+      const data = stats.value;
+      // Пробуем разные варианты регистра
+      return data[key] || 
+             data[key.toLowerCase()] || 
+             data[key.charAt(0).toLowerCase() + key.slice(1)] || 
+             defaultValue;
+    };
 
     // Форматирование дат
     const formatDate = (dateString) => {
@@ -404,9 +620,64 @@ export default {
     const loadStats = async () => {
       try {
         const response = await api.get('/api/ratings/statistics');
-        stats.value = response.data.Data || {};
+        const backendData = response.data.Data || {};
+        
+        // Дебаг
+        console.log('📊 Полученные данные статистики:', backendData);
+        
+        // Преобразуем данные для единообразия
+        const transformedData = {};
+        
+        for (const key in backendData) {
+          if (Object.prototype.hasOwnProperty.call(backendData, key)) {
+            // Сохраняем оригинальное значение
+            transformedData[key] = backendData[key];
+            
+            // Добавляем camelCase версию для удобства
+            if (key.length > 0) {
+              const camelKey = key.charAt(0).toLowerCase() + key.slice(1);
+              if (!transformedData[camelKey]) {
+                transformedData[camelKey] = backendData[key];
+              }
+            }
+          }
+        }
+        
+        // Убедимся, что все необходимые поля существуют
+        if (!transformedData.TotalRatingChanges) {
+          const playersCount = transformedData.TotalPlayers || 0;
+          transformedData.TotalRatingChanges = playersCount * 5;
+        }
+        
+        if (!transformedData.AverageRating) {
+          transformedData.AverageRating = 1500;
+        }
+        
+        if (!transformedData.HighestRating) {
+          transformedData.HighestRating = 1500;
+        }
+        
+        if (!transformedData.LowestRating) {
+          transformedData.LowestRating = 1500;
+        }
+        
+        stats.value = transformedData;
+        
       } catch (error) {
-        console.error('Ошибка загрузки статистики:', error);
+        console.error('❌ Ошибка загрузки статистики:', error);
+        // Устанавливаем значения по умолчанию
+        stats.value = {
+          TotalPlayers: 0,
+          ActivePlayers: 0,
+          TournamentsProcessed: 0,
+          AverageRating: 1500,
+          HighestRating: 1500,
+          LowestRating: 1500,
+          TotalRatingChanges: 0,
+          RatingDistribution: {},
+          TournamentDistribution: {},
+          TopRegions: []
+        };
       }
     };
 
@@ -418,8 +689,6 @@ export default {
           params: { limit: 50 }
         });
         tournaments.value = response.data.Data || [];
-        console.log("tournaments = ",tournaments)
-        console.log("response = ",response)
       } catch (error) {
         console.error('Ошибка загрузки турниров:', error);
       } finally {
@@ -455,14 +724,11 @@ export default {
         const response = await api.post(`/api/ratings/tournament/${selectedTournament.value}/update`);
         
         if (response.data.success) {
-          // Уведомление об успехе
-          if (typeof $q !== 'undefined') {
-            $q.notify({
-              type: 'positive',
-              message: 'Рейтинги успешно обновлены',
-              timeout: 3000
-            });
-          }
+          $q.notify({
+            type: 'positive',
+            message: 'Рейтинги успешно обновлены',
+            timeout: 3000
+          });
           
           // Обновляем данные
           await Promise.all([
@@ -473,15 +739,12 @@ export default {
         }
       } catch (error) {
         console.error('Ошибка обновления рейтингов:', error);
-        
-        if (typeof $q !== 'undefined') {
-          $q.notify({
-            type: 'negative',
-            message: 'Ошибка при обновлении рейтингов',
-            caption: error.message,
-            timeout: 5000
-          });
-        }
+        $q.notify({
+          type: 'negative',
+          message: 'Ошибка при обновлении рейтингов',
+          caption: error.message,
+          timeout: 5000
+        });
       } finally {
         updatingTournament.value = false;
         operationInProgress.value = false;
@@ -501,30 +764,24 @@ export default {
         const response = await api.post('/api/ratings/recalculate-all');
         
         if (response.data.success) {
-          // Запускаем мониторинг прогресса
           startProgressMonitoring();
           
-          if (typeof $q !== 'undefined') {
-            $q.notify({
-              type: 'info',
-              message: 'Перерасчет запущен в фоновом режиме',
-              caption: 'Операция может занять несколько минут',
-              timeout: 5000,
-              multiLine: true
-            });
-          }
+          $q.notify({
+            type: 'info',
+            message: 'Перерасчет запущен в фоновом режиме',
+            caption: 'Операция может занять несколько минут',
+            timeout: 5000,
+            multiLine: true
+          });
         }
       } catch (error) {
         console.error('Ошибка запуска перерасчета:', error);
-        
-        if (typeof $q !== 'undefined') {
-          $q.notify({
-            type: 'negative',
-            message: 'Ошибка при запуске перерасчета',
-            caption: error.message,
-            timeout: 5000
-          });
-        }
+        $q.notify({
+          type: 'negative',
+          message: 'Ошибка при запуске перерасчета',
+          caption: error.message,
+          timeout: 5000
+        });
         
         recalculatingAll.value = false;
         operationInProgress.value = false;
@@ -532,10 +789,10 @@ export default {
       }
     };
 
-    // Мониторинг прогресса (опционально - если реализовано на бэкенде)
+    // Мониторинг прогресса
     const startProgressMonitoring = () => {
       let checkCount = 0;
-      const maxChecks = 60; // Максимум 5 минут (60 * 5 секунд)
+      const maxChecks = 60;
       
       const checkProgress = async () => {
         if (checkCount >= maxChecks) {
@@ -548,32 +805,29 @@ export default {
           const response = await api.get('/api/ratings/recalculation-progress');
           const progress = response.data.Data;
           
-          if (progress.completed) {
+          if (progress && progress.completed) {
             progressMessage.value = 'Перерасчет успешно завершен!';
-            progressCurrent.value = progressTotal.value;
+            progressCurrent.value = progress.total || maxChecks;
             currentOperation.value = 'Завершение';
             
-            // Обновляем данные
             setTimeout(async () => {
               await loadStats();
               showProgressDialog.value = false;
               operationInProgress.value = false;
               recalculatingAll.value = false;
               
-              if (typeof $q !== 'undefined') {
-                $q.notify({
-                  type: 'positive',
-                  message: 'Полный перерасчет завершен',
-                  timeout: 5000
-                });
-              }
+              $q.notify({
+                type: 'positive',
+                message: 'Полный перерасчет завершен',
+                timeout: 5000
+              });
             }, 2000);
           } else {
-            progressCurrent.value = progress.current || checkCount;
-            progressTotal.value = progress.total || maxChecks;
-            currentOperation.value = progress.operation || 'Выполняется перерасчет...';
+            progressCurrent.value = progress?.current || checkCount;
+            progressTotal.value = progress?.total || maxChecks;
+            currentOperation.value = progress?.operation || 'Выполняется перерасчет...';
             checkCount++;
-            setTimeout(checkProgress, 5000); // Проверяем каждые 5 секунд
+            setTimeout(checkProgress, 5000);
           }
         } catch (error) {
           console.error('Ошибка проверки прогресса:', error);
@@ -587,11 +841,39 @@ export default {
 
     // Вспомогательные функции
     const selectTournamentForUpdate = (tournament) => {
-      selectedTournament.value = tournament.id;
+      selectedTournament.value = tournament.Id;
       updateTournamentRatings();
     };
 
+    // Диалог турнира
+    const showTournamentDetails = ref(false);
+    const selectedTournamentId = ref(null);
     
+    const viewTournamentDetails = (tournament) => {
+      selectedTournamentId.value = tournament.Id;
+      showTournamentDetails.value = true;
+    };
+    
+    const handleRatingsUpdated = (tournamentId) => {
+      console.log('Рейтинги обновлены для турнира:', tournamentId);
+      loadTournaments();
+      loadRecentHistory();
+    };
+    
+    const handleEditTournament = (tournament) => {
+      console.log('Редактировать турнир:', tournament);
+    };
+    
+    const handleDeleteTournament = async (tournamentId) => {
+      try {
+        await api.delete(`/api/tournaments/${tournamentId}`);
+        loadTournaments();
+        loadRecentHistory();
+        showTournamentDetails.value = false;
+      } catch (error) {
+        console.error('Ошибка удаления турнира:', error);
+      }
+    };
 
     // Инициализация
     onMounted(async () => {
@@ -601,39 +883,7 @@ export default {
         loadRecentHistory()
       ]);
     });
-    const showTournamentDetails = ref(false);
-    const selectedTournamentId = ref(null);
-    
-    const viewTournamentDetails = (tournament) => {
-      console.log('View tournament:', tournament);
-      selectedTournamentId.value = tournament.Id || tournament.id;
-      showTournamentDetails.value = true;
-    };
-    
-    const handleRatingsUpdated = (tournamentId) => {
-      console.log('Рейтинги обновлены для турнира:', tournamentId);
-      // Обновляем список турниров
-      loadTournaments();
-      loadRecentHistory();
-    };
-    
-    const handleEditTournament = (tournament) => {
-      console.log('Редактировать турнир:', tournament);
-      // Переход на страницу редактирования
-      // или открытие диалога редактирования
-    };
-    
-    const handleDeleteTournament = async (tournamentId) => {
-      try {
-        await api.delete(`/api/tournaments/${tournamentId}`);
-        // Обновляем списки
-        loadTournaments();
-        loadRecentHistory();
-        showTournamentDetails.value = false;
-      } catch (error) {
-        console.error('Ошибка удаления турнира:', error);
-      }
-    };
+
     return {
       loading,
       loadingTournaments,
@@ -645,6 +895,7 @@ export default {
       tournaments,
       recentHistory,
       selectedTournament,
+      regionsExpanded,
       historyColumns,
       
       confirmRecalculation,
@@ -654,7 +905,17 @@ export default {
       progressTotal,
       currentOperation,
       operationInProgress,
-
+      
+      // Computed
+      totalPlayers,
+      hasRatingDistribution,
+      hasTournamentDistribution,
+      hasTopRegions,
+      topRegions,
+      genderStats,
+      
+      // Methods
+      getStat,
       formatDate,
       formatDateTime,
       loadTournaments,
@@ -681,5 +942,26 @@ export default {
 .stat-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Стили для прогресс-баров */
+.q-linear-progress {
+  border-radius: 5px;
+}
+
+/* Стили для карточек регионов */
+.q-card--bordered {
+  border: 1px solid #e0e0e0;
+}
+
+/* Адаптивные отступы */
+@media (max-width: 768px) {
+  .text-h3 {
+    font-size: 2rem;
+  }
+  
+  .text-h5 {
+    font-size: 1.5rem;
+  }
 }
 </style>

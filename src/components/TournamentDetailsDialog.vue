@@ -46,7 +46,7 @@
                     <q-item>
                       <q-item-section>
                         <q-item-label caption>Город</q-item-label>
-                        <q-item-label>{{ tournament.City || 'Не указан' }}</q-item-label>
+                        <q-item-label>{{ tournament.City.Title || 'Не указан' }}</q-item-label>
                       </q-item-section>
                     </q-item>
                     <q-item>
