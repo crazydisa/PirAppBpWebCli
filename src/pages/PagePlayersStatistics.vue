@@ -37,6 +37,8 @@
               <q-select
                 v-model="filter.region"
                 :options="regions"
+                option-label="Title"      
+                option-value="Title"        
                 label="Регион"
                 clearable
                 dense
@@ -81,7 +83,7 @@
           <q-card class="stat-card">
             <q-card-section class="text-center">
               <div class="text-h6 text-grey-7">Всего игроков</div>
-              <div class="text-h2 text-primary">{{ stats.totalPlayers || 0 }}</div>
+              <div class="text-h2 text-primary">{{ stats.TotalPlayers || 0 }}</div>
             </q-card-section>
           </q-card>
         </div>
@@ -90,7 +92,7 @@
           <q-card class="stat-card">
             <q-card-section class="text-center">
               <div class="text-h6 text-grey-7">Средний рейтинг</div>
-              <div class="text-h2 text-positive">{{ stats.averageRating || 0 }}</div>
+              <div class="text-h2 text-positive">{{ stats.AverageRating || 0 }}</div>
             </q-card-section>
           </q-card>
         </div>
@@ -99,7 +101,7 @@
           <q-card class="stat-card">
             <q-card-section class="text-center">
               <div class="text-h6 text-grey-7">Топ-10 игроков</div>
-              <div class="text-h2 text-warning">{{ stats.top10Players || 0 }}</div>
+              <div class="text-h2 text-warning">{{ stats.Top10Players || 0 }}</div>
             </q-card-section>
           </q-card>
         </div>
@@ -108,7 +110,7 @@
           <q-card class="stat-card">
             <q-card-section class="text-center">
               <div class="text-h6 text-grey-7">Активных</div>
-              <div class="text-h2 text-info">{{ stats.activePlayers || 0 }}</div>
+              <div class="text-h2 text-info">{{ stats.ActivePlayers || 0 }}</div>
             </q-card-section>
           </q-card>
         </div>
@@ -123,7 +125,7 @@
         <q-table
           :rows="players"
           :columns="columns"
-          row-key="id"
+          row-key="Id"
           :loading="loading"
           :filter="filter.search"
           :pagination="pagination"
@@ -210,10 +212,10 @@
           <template v-slot:body-cell-place="props">
             <q-td :props="props">
               <q-badge
-                :color="getPlaceColor(props.row.place)"
+                :color="getPlaceColor(props.row.Place)"
                 class="q-px-sm q-py-xs"
               >
-                {{ props.row.place }}
+                {{ props.row.Place }}
               </q-badge>
             </q-td>
           </template>
@@ -222,25 +224,25 @@
             <q-td :props="props">
               <div class="row items-center no-wrap">
                 <div class="col">
-                  <div class="text-bold">{{ props.row.rating }}</div>
+                  <div class="text-bold">{{ props.row.Rating }}</div>
                   <div class="text-caption text-grey-6">
-                    <q-icon name="trending_up" v-if="props.row.ratingChange > 0" />
-                    <q-icon name="trending_down" v-else-if="props.row.ratingChange < 0" />
-                    <span v-if="props.row.ratingChange !== 0">
-                      {{ props.row.ratingChange > 0 ? '+' : '' }}{{ props.row.ratingChange }}
+                    <q-icon name="trending_up" v-if="props.row.RatingChange > 0" />
+                    <q-icon name="trending_down" v-else-if="props.row.RatingChange < 0" />
+                    <span v-if="props.row.RatingChange !== 0">
+                      {{ props.row.RatingChange > 0 ? '+' : '' }}{{ props.row.RatingChange }}
                     </span>
                   </div>
                 </div>
                 <div class="col-auto">
                   <q-circular-progress
-                    v-if="props.row.ratingProgress"
-                    :value="props.row.ratingProgress"
+                    v-if="props.row.RatingProgress"
+                    :value="props.row.RatingProgress"
                     size="30px"
                     :thickness="0.2"
                     color="primary"
                     class="q-ml-xs"
                   >
-                    {{ Math.round(props.row.ratingProgress) }}%
+                    {{ Math.round(props.row.RatingProgress) }}%
                   </q-circular-progress>
                 </div>
               </div>
@@ -253,16 +255,16 @@
                 <q-avatar
                   size="40px"
                   class="q-mr-sm"
-                  :color="props.row.gender === 'Male' ? 'blue' : 'pink'"
+                  :color="props.row.Gender === 'Male' ? 'blue' : 'pink'"
                   text-color="white"
                 >
-                  {{ props.row.fullName.charAt(0) }}
+                  {{ props.row.FullName.charAt(0) }}
                 </q-avatar>
                 <div>
-                  <div class="text-weight-medium">{{ props.row.fullName }}</div>
+                  <div class="text-weight-medium">{{ props.row.FullName }}</div>
                   <div class="text-caption text-grey-6">
                     <q-icon name="place" size="xs" />
-                    {{ props.row.region || 'Не указан' }}
+                    {{ props.row.Region || 'Не указан' }}
                   </div>
                 </div>
               </div>
@@ -274,11 +276,11 @@
               <div class="column">
                 <div class="row items-center">
                   <q-icon name="emoji_events" size="16px" class="q-mr-xs" />
-                  <span>{{ props.row.tournamentCount }} турниров</span>
+                  <span>{{ props.row.TournamentCount }} турниров</span>
                 </div>
                 <div class="row items-center">
                   <q-icon name="star" size="16px" class="q-mr-xs" />
-                  <span>Среднее: {{ props.row.averageScore.toFixed(2) }}</span>
+                  <span>Среднее: {{ props.row.AverageScore.toFixed(2) }}</span>
                 </div>
               </div>
             </q-td>
@@ -335,7 +337,7 @@
                   v-for="(region, index) in topRegions"
                   :key="index"
                   clickable
-                  @click="filterByRegion(region.name)"
+                  @click="filterByRegion(region.RegionName)"
                 >
                   <q-item-section avatar>
                     <q-badge :color="getRegionColor(index)" class="q-pa-sm">
@@ -343,12 +345,12 @@
                     </q-badge>
                   </q-item-section>
                   <q-item-section>
-                    <q-item-label>{{ region.name }}</q-item-label>
-                    <q-item-label caption>{{ region.playerCount }} игроков</q-item-label>
+                    <q-item-label>{{ region.RegionName }}</q-item-label>
+                    <q-item-label caption>{{ region.PlayerCount }} игроков</q-item-label>
                   </q-item-section>
                   <q-item-section side>
                     <q-item-label class="text-weight-bold">
-                      {{ region.averageRating }}
+                      {{ region.AverageRating }}
                     </q-item-label>
                   </q-item-section>
                 </q-item>
@@ -431,7 +433,7 @@ export default {
       {
         name: 'place',
         label: '#',
-        field: 'place',
+        field: 'Place',
         align: 'center',
         sortable: true,
         width: '60px'
@@ -439,14 +441,14 @@ export default {
       {
         name: 'player',
         label: 'Игрок',
-        field: 'fullName',
+        field: 'FullName',
         align: 'left',
         sortable: true
       },
       {
         name: 'rating',
         label: 'Рейтинг',
-        field: 'rating',
+        field: 'Rating',
         align: 'center',
         sortable: true,
         width: '120px'
@@ -454,7 +456,7 @@ export default {
       {
         name: 'peakRating',
         label: 'Пиковый',
-        field: 'peakRating',
+        field: 'PeakRating',
         align: 'center',
         sortable: true,
         width: '100px'
@@ -462,21 +464,21 @@ export default {
       {
         name: 'stats',
         label: 'Статистика',
-        field: 'tournamentCount',
+        field: 'TournamentCount',
         align: 'left',
         sortable: true
       },
       {
         name: 'region',
         label: 'Регион',
-        field: 'region',
+        field: 'Region',
         align: 'left',
         sortable: true
       },
       {
         name: 'gender',
         label: 'Пол',
-        field: 'gender',
+        field: 'Gender',
         align: 'center',
         sortable: true,
         width: '80px'
@@ -510,24 +512,25 @@ export default {
           }
         });
         
-        players.value = response.data.data.map((player, index) => ({
+        players.value = response.data.Data.Players.map((player, index) => ({
           ...player,
-          place: index + 1,
-          ratingProgress: Math.min(100, (player.rating / 2500) * 100),
-          ratingChange: Math.floor(Math.random() * 21) - 10 // Для демо
+          Place: index + 1,
+          RatingProgress: Math.min(100, (player.Rating / 2500) * 100),
+          RatingChange: Math.floor(Math.random() * 21) - 10 // Для демо
         }));
         
         // Загружаем статистику
         const statsResponse = await api.get('/api/ratings/statistics');
-        stats.value = statsResponse.data.data;
+        stats.value = statsResponse.data.Data;
         
         // Загружаем регионы
         const regionsResponse = await api.get('/api/regions');
-        regions.value = regionsResponse.data.data;
+        console.log("regionsResponse ",regionsResponse)
+        regions.value = regionsResponse.data.Items;
         
         // Загружаем топ регионов
         const topRegionsResponse = await api.get('/api/statistics/top-regions');
-        topRegions.value = topRegionsResponse.data.data;
+        topRegions.value = topRegionsResponse.data.Data;
         
         // Инициализируем график
         initChart();
@@ -551,12 +554,12 @@ export default {
       
       // Данные для графика
       const data = [
-        { value: stats.value.ratingDistribution?.['<1300'] || 0, name: '<1300' },
-        { value: stats.value.ratingDistribution?.['1300-1499'] || 0, name: '1300-1499' },
-        { value: stats.value.ratingDistribution?.['1500-1699'] || 0, name: '1500-1699' },
-        { value: stats.value.ratingDistribution?.['1700-1899'] || 0, name: '1700-1899' },
-        { value: stats.value.ratingDistribution?.['1900-2099'] || 0, name: '1900-2099' },
-        { value: stats.value.ratingDistribution?.['2100+'] || 0, name: '2100+' }
+        { value: stats.value.RatingDistribution?.['<1300'] || 0, name: '<1300' },
+        { value: stats.value.RatingDistribution?.['1300-1499'] || 0, name: '1300-1499' },
+        { value: stats.value.RatingDistribution?.['1500-1699'] || 0, name: '1500-1699' },
+        { value: stats.value.RatingDistribution?.['1700-1899'] || 0, name: '1700-1899' },
+        { value: stats.value.RatingDistribution?.['1900-2099'] || 0, name: '1900-2099' },
+        { value: stats.value.RatingDistribution?.['2100+'] || 0, name: '2100+' }
       ];
       
       const option = {
