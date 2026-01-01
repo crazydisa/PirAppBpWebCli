@@ -7,7 +7,10 @@
       :loading="loading"
       flat
       bordered
-      :pagination="pagination"
+      v-model:pagination="pagination"
+      @request="onRequest"
+      :rows-per-page-options="[10, 20, 50, 100]"
+      binary-state-sort
     >
       <template v-slot:top>
         <div class="text-h6">Результаты турнира (индивидуальные)</div>
@@ -37,34 +40,54 @@
       <!-- Детализация строки -->
       <template v-slot:body="props">
         <q-tr :props="props">
-          <q-td key="place" :props="props">{{ props.row.place }}</q-td>
+          <q-td key="place" :props="props">{{ props.row.Place }}</q-td>
           <q-td key="player" :props="props">
-            <div class="text-weight-medium">{{ props.row.playerName }}</div>
-            <div class="text-caption text-grey-7">{{ props.row.playerRegion }}</div>
+            <div class="text-weight-medium">{{ props.row.PlayerName }}</div>
+            <div class="text-caption text-grey-7">{{ props.row.PlayerRegion }}</div>
           </q-td>
           <q-td key="totalScore" :props="props" class="text-center">
-            <div class="text-h6">{{ props.row.totalScore }}</div>
+            <div class="text-h6">{{ props.row.TotalScore }}</div>
           </q-td>
           <q-td key="averageScore" :props="props" class="text-center">
-            {{ props.row.formattedAverage }}
+            {{ props.row.FormattedAverage }}
           </q-td>
           <!-- Игры как отдельные колонки -->
           <q-td key="game1" :props="props" class="text-center">
-            <q-badge :color="getSingleGameBadgeColor(props.row.game1)">
-              {{ props.row.game1 || '-' }}
+            <q-badge :color="getSingleGameBadgeColor(props.row.gGame1)">
+              {{ props.row.Game1 || '-' }}
             </q-badge>
           </q-td>
           <q-td key="game2" :props="props" class="text-center">
-            <q-badge :color="getSingleGameBadgeColor(props.row.game2)">
-              {{ props.row.game2 || '-' }}
+            <q-badge :color="getSingleGameBadgeColor(props.row.Game2)">
+              {{ props.row.Game2 || '-' }}
+            </q-badge>
+          </q-td>
+          <q-td key="game2" :props="props" class="text-center">
+            <q-badge :color="getSingleGameBadgeColor(props.row.Game3)">
+              {{ props.row.Game3 || '-' }}
+            </q-badge>
+          </q-td>
+          <q-td key="game2" :props="props" class="text-center">
+            <q-badge :color="getSingleGameBadgeColor(props.row.Game4)">
+              {{ props.row.Game4 || '-' }}
+            </q-badge>
+          </q-td>
+          <q-td key="game2" :props="props" class="text-center">
+            <q-badge :color="getSingleGameBadgeColor(props.row.Game5)">
+              {{ props.row.Game5 || '-' }}
+            </q-badge>
+          </q-td>
+          <q-td key="game2" :props="props" class="text-center">
+            <q-badge :color="getSingleGameBadgeColor(props.row.Game6)">
+              {{ props.row.Game6 || '-' }}
             </q-badge>
           </q-td>
           <!-- ... остальные игры ... -->
           <q-td key="strikes" :props="props" class="text-center">
-            {{ props.row.strikeCount }}
+            {{ props.row.StrikeCount }}
           </q-td>
           <q-td key="spares" :props="props" class="text-center">
-            {{ props.row.spareCount }}
+            {{ props.row.SpareCount }}
           </q-td>
         </q-tr>
         
@@ -79,19 +102,19 @@
                     <q-item>
                       <q-item-section>Лучшая игра:</q-item-section>
                       <q-item-section side>
-                        <strong>{{ props.row.highGame }}</strong>
+                        <strong>{{ props.row.HighGame }}</strong>
                       </q-item-section>
                     </q-item>
                     <q-item>
                       <q-item-section>Худшая игра:</q-item-section>
                       <q-item-section side>
-                        <strong>{{ props.row.lowGame }}</strong>
+                        <strong>{{ props.row.LowGame }}</strong>
                       </q-item-section>
                     </q-item>
                     <q-item>
                       <q-item-section>Консистентность:</q-item-section>
                       <q-item-section side>
-                        <strong>{{ props.row.consistency?.toFixed(2) }}</strong>
+                        <strong>{{ props.row.Consistency?.toFixed(2) }}</strong>
                       </q-item-section>
                     </q-item>
                   </q-list>
@@ -118,7 +141,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch  } from 'vue';
 import { api } from '../services/api';
 
 export default {
@@ -139,28 +162,45 @@ export default {
     const results = ref([]);
     const loading = ref(false);
     const pagination = ref({
+      sortBy: 'Place',
+      descending: true,
       page: 1,
       rowsPerPage: 20,
       rowsNumber: 0
     });
-    
+    const onRequest = (props) => {
+      console.log("Событие таблицы:", props);
+      
+      const { page, rowsPerPage, sortBy, descending } = props.pagination;
+      
+       // Клонируем объект, чтобы обновить все свойства
+      pagination.value = {
+        ...pagination.value,
+        page,
+        rowsPerPage,
+        sortBy,
+        descending
+      };
+      
+      loadResults(page, rowsPerPage, sortBy, descending);
+    };
     const columns = ref([
-      { name: 'place', label: 'Место', field: 'place', align: 'center', sortable: true },
-      { name: 'player', label: 'Игрок', field: 'playerName', align: 'left', sortable: true },
-      { name: 'totalScore', label: 'Счет', field: 'totalScore', align: 'center', sortable: true },
-      { name: 'averageScore', label: 'Средний', field: 'formattedAverage', align: 'center', sortable: true },
-      { name: 'game1', label: '1', field: 'game1', align: 'center' },
-      { name: 'game2', label: '2', field: 'game2', align: 'center' },
-      { name: 'game3', label: '3', field: 'game3', align: 'center' },
-      { name: 'game4', label: '4', field: 'game4', align: 'center' },
-      { name: 'game5', label: '5', field: 'game5', align: 'center' },
-      { name: 'game6', label: '6', field: 'game6', align: 'center' },
-      { name: 'strikes', label: 'Страйки', field: 'strikeCount', align: 'center' },
-      { name: 'spares', label: 'Спэры', field: 'spareCount', align: 'center' }
+      { name: 'place', label: 'Место', field: 'Place', align: 'center', sortable: true },
+      { name: 'player', label: 'Игрок', field: 'PlayerName', align: 'left', sortable: true },
+      { name: 'totalScore', label: 'Счет', field: 'TotalScore', align: 'center', sortable: true },
+      { name: 'averageScore', label: 'Средний', field: 'FormattedAverage', align: 'center', sortable: true },
+      { name: 'game1', label: '1', field: 'Game1', align: 'center' },
+      { name: 'game2', label: '2', field: 'Game2', align: 'center' },
+      { name: 'game3', label: '3', field: 'Game3', align: 'center' },
+      { name: 'game4', label: '4', field: 'Game4', align: 'center' },
+      { name: 'game5', label: '5', field: 'Game5', align: 'center' },
+      { name: 'game6', label: '6', field: 'Game6', align: 'center' },
+      { name: 'strikes', label: 'Страйки', field: 'StrikeCount', align: 'center' },
+      { name: 'spares', label: 'Спэры', field: 'SpareCount', align: 'center' }
     ]);
     
     const getGameScores = (row) => {
-      return [row.game1, row.game2, row.game3, row.game4, row.game5, row.game6];
+      return [row.Game1, row.Game2, row.Game3, row.Game4, row.Game5, row.Game6];
     };
     
     const getGameBadgeColor = (score) => {
@@ -180,32 +220,57 @@ export default {
       return 'negative';
     };
     
-    const loadResults = async () => {
+    const loadResults = async (page = 1, pageSize = 20, sortField = 'Place', sortDesc = false) => {
       loading.value = true;
       try {
         const endpoint = props.resultsType === 'team' 
           ? `/api/tournamentresults/tournament/${props.tournamentId}/team`
           : `/api/tournamentresults/tournament/${props.tournamentId}/individual`;
-        console.log("endpoint = ",endpoint)  
+        
+        console.log("Загрузка результатов:", { 
+          endpoint, 
+          page, 
+          pageSize, 
+          sortField, 
+          sortDesc 
+        });
+        
         const response = await api.get(endpoint, {
           params: {
-            page: pagination.value.page,
-            pageSize: pagination.value.rowsPerPage
+            page: page,
+            pageSize: pageSize,
+            sortBy: sortField,
+            descending: sortDesc
           }
         });
-        console.log("response = ",response)
-        results.value = response.data.Data?.Results || response.data.data?.Results || [];
-        pagination.value.rowsNumber = response.data.Data?.totalCount || response.data.data?.totalCount || 0;
+        
+        console.log("Ответ сервера:", response.data);
+        
+        // Проверяем разные возможные структуры ответа
+        const responseData = response.data.Data || response.data.data || response.data;
+        const resultsData = responseData.Results || responseData.results || responseData;
+        const totalCount = responseData.TotalCount || responseData.totalCount || resultsData.length;
+        
+        results.value = Array.isArray(resultsData) ? resultsData : [];
+        pagination.value.rowsNumber = totalCount;
+        pagination.value.page = page;
+        pagination.value.rowsPerPage = pageSize;
+        pagination.value.sortBy = sortField;
+        pagination.value.descending = sortDesc;
         
         // Добавляем вычисляемые свойства
         results.value = results.value.map(result => ({
           ...result,
-          formattedAverage: result.averageScore?.toFixed(2) || '0.00',
-          gamesSummary: `${result.game1}/${result.game2}/${result.game3}/${result.game4}/${result.game5}/${result.game6}`
+          FormattedAverage: result.AverageScore ? result.AverageScore.toFixed(2) : '0.00',
+          GamesSummary: `${result.Game1 || 0}/${result.Game2 || 0}/${result.Game3 || 0}/${result.Game4 || 0}/${result.Game5 || 0}/${result.Game6 || 0}`
         }));
+        
+        console.log("Загружено результатов:", results.value.length);
         
       } catch (error) {
         console.error('Ошибка загрузки результатов:', error);
+        results.value = [];
+        pagination.value.rowsNumber = 0;
       } finally {
         loading.value = false;
       }
@@ -216,9 +281,19 @@ export default {
       // Реализуйте экспорт в CSV/Excel
     };
     
+   // Следим за изменением tournamentId
+    watch(() => props.tournamentId, (newId, oldId) => {
+      if (newId && newId !== oldId) {
+        console.log("TournamentId изменился:", newId);
+        loadResults(pagination.value.page, pagination.value.rowsPerPage);
+      }
+    });
+    
     onMounted(() => {
-      console.log("onMounted")
-      loadResults();
+      console.log("Компонент TournamentResults смонтирован, tournamentId:", props.tournamentId);
+      if (props.tournamentId) {
+        loadResults(pagination.value.page, pagination.value.rowsPerPage);
+      }
     });
     
     return {
@@ -229,7 +304,8 @@ export default {
       getGameScores,
       getGameBadgeColor,
       getSingleGameBadgeColor,
-      exportResults
+      exportResults,
+      onRequest
     };
   }
 };

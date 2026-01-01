@@ -591,7 +591,7 @@ export default {
       { name: 'tournament', label: 'Турнир', field: 'Name', align: 'left', sortable: true },
       { name: 'status', label: 'Статус', field: 'RatingsUpdated', align: 'center', sortable: true },
       { name: 'updated', label: 'Обновлен', field: 'RatingsUpdatedDate', align: 'center', sortable: true },
-      { name: 'players', label: 'Участники', field: 'ParticipantCount', align: 'center', sortable: true },
+      { name: 'players', label: 'Участники', field: 'PlayerCount', align: 'center', sortable: true },
       { name: 'actions', label: 'Действия', align: 'center' }
     ];
 
@@ -689,6 +689,8 @@ export default {
           params: { limit: 50 }
         });
         tournaments.value = response.data.Data || [];
+        // Дебаг
+        console.log('📊 Полученные турниры:', tournaments);
       } catch (error) {
         console.error('Ошибка загрузки турниров:', error);
       } finally {
@@ -704,6 +706,8 @@ export default {
           params: { limit: 10 }
         });
         recentHistory.value = response.data.Data || [];
+        // Дебаг
+        console.log('📊 Получение истории:', recentHistory);
       } catch (error) {
         console.error('Ошибка загрузки истории:', error);
       } finally {
