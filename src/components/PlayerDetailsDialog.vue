@@ -21,19 +21,19 @@
                     text-color="white"
                     class="q-mb-md"
                   >
-                    {{ player.fullName.charAt(0) }}
+                    {{ player.FullName.charAt(0) }}
                   </q-avatar>
-                  <div class="text-h5">{{ player.fullName }}</div>
+                  <div class="text-h5">{{ player.FullName }}</div>
                   <div class="text-subtitle1 text-grey-7">
                     <q-icon name="place" />
-                    {{ player.region || 'Не указан' }}
+                    {{ player.Region || 'Не указан' }}
                   </div>
                   <q-chip
                     :color="player.gender === 'Male' ? 'blue' : 'pink'"
                     text-color="white"
                     size="sm"
                   >
-                    {{ player.gender === 'Male' ? 'Мужчина' : 'Женщина' }}
+                    {{ player.Gender === 'Male' ? 'Мужчина' : 'Женщина' }}
                   </q-chip>
                 </q-card-section>
               </q-card>
@@ -47,13 +47,13 @@
                   <q-card class="text-center" flat bordered>
                     <q-card-section>
                       <div class="text-h6 text-grey-7">Текущий рейтинг</div>
-                      <div class="text-h2 text-primary">{{ player.rating }}</div>
+                      <div class="text-h2 text-primary">{{ player.Rating }}</div>
                       <div class="text-caption">
                         <q-icon
-                          :name="player.ratingChange > 0 ? 'trending_up' : 'trending_down'"
-                          :color="player.ratingChange > 0 ? 'positive' : 'negative'"
+                          :name="player.RatingChange > 0 ? 'trending_up' : 'trending_down'"
+                          :color="player.RatingChange > 0 ? 'positive' : 'negative'"
                         />
-                        {{ player.ratingChange > 0 ? '+' : '' }}{{ player.ratingChange }}
+                        {{ player.RatingChange > 0 ? '+' : '' }}{{ player.RatingChange }}
                       </div>
                     </q-card-section>
                   </q-card>
@@ -64,7 +64,7 @@
                   <q-card class="text-center" flat bordered>
                     <q-card-section>
                       <div class="text-h6 text-grey-7">Пиковый рейтинг</div>
-                      <div class="text-h2 text-warning">{{ player.peakRating }}</div>
+                      <div class="text-h2 text-warning">{{ player.PeakRating }}</div>
                       <div class="text-caption">Лучший результат</div>
                     </q-card-section>
                   </q-card>
@@ -75,7 +75,7 @@
                   <q-card class="text-center" flat bordered>
                     <q-card-section>
                       <div class="text-h6 text-grey-7">Участие в турнирах</div>
-                      <div class="text-h2 text-info">{{ player.tournamentCount }}</div>
+                      <div class="text-h2 text-info">{{ player.TournamentCount }}</div>
                       <div class="text-caption">Всего сыграно</div>
                     </q-card-section>
                   </q-card>
@@ -86,7 +86,7 @@
                   <q-card class="text-center" flat bordered>
                     <q-card-section>
                       <div class="text-h6 text-grey-7">Средний счет</div>
-                      <div class="text-h2 text-positive">{{ player.averageScore.toFixed(2) }}</div>
+                      <div class="text-h2 text-positive">{{ player.AverageScore.toFixed(2) }}</div>
                       <div class="text-caption">За турнир</div>
                     </q-card-section>
                   </q-card>
@@ -97,7 +97,7 @@
                   <q-card class="text-center" flat bordered>
                     <q-card-section>
                       <div class="text-h6 text-grey-7">Среднее место</div>
-                      <div class="text-h2 text-orange">{{ player.averagePlace.toFixed(1) }}</div>
+                      <div class="text-h2 text-orange">{{ player.AveragePlace.toFixed(1) }}</div>
                       <div class="text-caption">Позиция в турнирах</div>
                     </q-card-section>
                   </q-card>
@@ -108,7 +108,7 @@
                   <q-card class="text-center" flat bordered>
                     <q-card-section>
                       <div class="text-h6 text-grey-7">В топ-3</div>
-                      <div class="text-h2 text-purple">{{ player.top3Percentage.toFixed(1) }}%</div>
+                      <div class="text-h2 text-purple">{{ player.Top3Percentage.toFixed(1) }}%</div>
                       <div class="text-caption">Процент попаданий</div>
                     </q-card-section>
                   </q-card>

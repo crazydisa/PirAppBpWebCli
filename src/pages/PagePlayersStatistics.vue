@@ -128,7 +128,7 @@
           row-key="Id"
           :loading="loading"
           :filter="filter.search"
-          :pagination="pagination"
+          v-model:pagination="pagination"
           @request="onRequest"
           class="sticky-header-table"
         >
@@ -368,13 +368,27 @@
         />
       </q-dialog>
   
-      <!-- Диалог истории рейтинга -->
+      <!-- Диалог истории рейтинга
       <q-dialog v-model="showHistoryDialog" full-width>
         <RatingHistoryDialog
           :player="selectedPlayer"
           @close="showHistoryDialog = false"
         />
-      </q-dialog>
+      </q-dialog> -->
+      <!-- Кнопка для открытия истории рейтинга -->
+    <q-btn
+      label="История рейтинга"
+      icon="timeline"
+      color="info"
+      @click="openRatingHistory(player)"
+    />
+    
+    <!-- Диалог истории рейтинга -->
+  <RatingHistoryDialog
+    v-model="showHistoryDialog"
+    :player="selectedPlayer"
+    @close="showHistoryDialog = false"
+  />
     </q-page>
   </template>
   
@@ -425,7 +439,7 @@ export default {
       descending: true,
       page: 1,
       rowsPerPage: 25,
-      rowsNumber: 0
+      rowsNumber: 0,
     });
 
     // Колонки таблицы
@@ -505,6 +519,11 @@ export default {
         // Загружаем игроков
         const response = await api.get('/api/ratings/global', {
           params: {
+            page: pagination.value.page,
+            pageSize: pagination.value.rowsPerPage,
+            sortBy: pagination.value.sortBy,
+            search: filter.value.search,
+            descending: pagination.value.descending,
             top: filter.value.limit,
             region: filter.value.region,
             gender: filter.value.gender,
@@ -512,9 +531,9 @@ export default {
           }
         });
         
-        players.value = response.data.Data.Players.map((player, index) => ({
+        players.value = response.data.Data.Players.map((player, /*index*/) => ({
           ...player,
-          Place: index + 1,
+          //Place: index + 1,
           RatingProgress: Math.min(100, (player.Rating / 2500) * 100),
           RatingChange: Math.floor(Math.random() * 21) - 10 // Для демо
         }));
@@ -618,7 +637,10 @@ export default {
       selectedPlayer.value = player;
       showHistoryDialog.value = true;
     };
-
+    const openRatingHistory = (player) => {
+      selectedPlayer.value = player;
+      showHistoryDialog.value = true;
+    };
     const filterByRegion = (region) => {
       filter.value.region = region;
       loadData();
@@ -636,7 +658,17 @@ export default {
     
 
     const onRequest = (props) => {
-      pagination.value = props.pagination;
+      //pagination.value = props.pagination;
+      console.log("Событие таблицы:", props);
+      const { page, rowsPerPage, sortBy, descending } = props.pagination;
+       // Клонируем объект, чтобы обновить все свойства
+      pagination.value = {
+        ...pagination.value,
+        page,
+        rowsPerPage,
+        sortBy,
+        descending
+      };
       loadData();
     };
 
@@ -668,6 +700,7 @@ export default {
       getRegionColor,
       showPlayerDetails,
       showRatingHistory,
+      openRatingHistory,
       filterByRegion,
       applyAdvancedFilters,
       refreshData,
